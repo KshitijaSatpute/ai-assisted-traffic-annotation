@@ -1,4 +1,5 @@
 
+import AnnotationCanvas from "./AnnotationCanvas";
 import { useState } from "react";
 import "./App.css";
 
@@ -83,6 +84,13 @@ function App() {
               src={uploadedImage.url}
               alt="Uploaded traffic scene"
             />
+
+          <AnnotationCanvas
+  imageUrl={uploadedImage.url}
+  imageId={uploadedImage.image_id}
+/>
+
+
           </div>
         )}
       </section>
