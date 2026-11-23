@@ -35,12 +35,13 @@ class BoundingBox(BaseModel):
     y_max: float = Field(ge=0)
 
 
+
 class Annotation(BaseModel):
     annotation_id: str
     image_id: str
     label: Literal["car", "truck", "pedestrian"]
     bbox: BoundingBox
-    source: Literal["manual", "ai"]
+    source: Literal["manual", "ai", "ai_accepted", "ai_edited"]
     confidence: float | None = Field(default=None, ge=0, le=1)
 
 
@@ -229,4 +230,130 @@ def load_annotations(image_id: str):
     return {
         "image_id": canonical_id,
         "annotations": json.loads(row[0]) if row else [],
+    }
+
+# ---------------------------------------------------------
+# YOLO11n AI suggestion endpoint
+# ---------------------------------------------------------
+
+from functools import lru_cache
+from threading import Lock
+from time import perf_counter
+
+from fastapi import Query
+from ultralytics import YOLO
+
+
+MODEL_PATH = Path(__file__).resolve().parent.parent / "yolo11n.pt"
+
+COCO_TO_APP_LABEL = {
+    0: "pedestrian",
+    2: "car",
+    7: "truck",
+}
+
+MODEL_LOCK = Lock()
+
+
+@lru_cache(maxsize=1)
+def get_yolo_model():
+    if not MODEL_PATH.is_file():
+        raise HTTPException(
+            status_code=503,
+            detail="YOLO11n weights not found. Expected yolo11n.pt in project root.",
+        )
+
+    return YOLO(str(MODEL_PATH))
+
+
+@app.post("/images/{image_id}/predict")
+def predict_image(
+    image_id: str,
+    conf: float = Query(default=0.25, ge=0.01, le=1.0),
+):
+    canonical_id, (width, height) = validate_image(image_id)
+
+    image_path = None
+
+    for extension in (".jpg", ".png"):
+        candidate = UPLOAD_DIR / f"{canonical_id}{extension}"
+
+        if candidate.is_file():
+            image_path = candidate
+            break
+
+    if image_path is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Image not found",
+        )
+
+    model = get_yolo_model()
+
+    try:
+        start = perf_counter()
+
+        # Serialize access to the shared YOLO model.
+        with MODEL_LOCK:
+            results = model.predict(
+                source=str(image_path),
+                conf=conf,
+                classes=list(COCO_TO_APP_LABEL.keys()),
+                device="cpu",
+                verbose=False,
+            )
+
+        inference_ms = round(
+            (perf_counter() - start) * 1000,
+            2,
+        )
+
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Model inference failed: {type(exc).__name__}",
+        ) from exc
+
+    predictions = []
+
+    for box in results[0].boxes:
+        class_id = int(box.cls.item())
+
+        if class_id not in COCO_TO_APP_LABEL:
+            continue
+
+        x_min, y_min, x_max, y_max = (
+            box.xyxy[0].cpu().tolist()
+        )
+
+        # Keep coordinates within the original image.
+        x_min = max(0.0, min(float(x_min), width))
+        y_min = max(0.0, min(float(y_min), height))
+        x_max = max(0.0, min(float(x_max), width))
+        y_max = max(0.0, min(float(y_max), height))
+
+        if x_max <= x_min or y_max <= y_min:
+            continue
+
+        predictions.append({
+            "prediction_id": str(uuid4()),
+            "label": COCO_TO_APP_LABEL[class_id],
+            "confidence": round(
+                float(box.conf.item()), 6
+            ),
+            "bbox": {
+                "x_min": x_min,
+                "y_min": y_min,
+                "x_max": x_max,
+                "y_max": y_max,
+            },
+        })
+
+    return {
+        "image_id": canonical_id,
+        "model": "yolo11n",
+        "confidence_threshold": conf,
+        "inference_ms": inference_ms,
+        "prediction_count": len(predictions),
+        "predictions": predictions,
     }

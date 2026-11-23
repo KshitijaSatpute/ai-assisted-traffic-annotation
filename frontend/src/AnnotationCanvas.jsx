@@ -6,6 +6,7 @@ import {
   Image as KonvaImage,
   Rect,
   Transformer,
+  Text as KonvaText,
 } from "react-konva";
 
 const API_URL = "http://127.0.0.1:8000";
@@ -22,14 +23,38 @@ function clamp(value, min, max) {
   return Math.max(min, Math.min(value, max));
 }
 
+function toCanvasBox(annotation, scale) {
+  return {
+    id: String(annotation.annotation_id),
+    label: annotation.label,
+    source: annotation.source ?? "manual",
+    confidence: annotation.confidence ?? null,
+    x: annotation.bbox.x_min * scale,
+    y: annotation.bbox.y_min * scale,
+    width:
+      (annotation.bbox.x_max - annotation.bbox.x_min) * scale,
+    height:
+      (annotation.bbox.y_max - annotation.bbox.y_min) * scale,
+  };
+}
+
 export default function AnnotationCanvas({ imageUrl, imageId }) {
   const [image, setImage] = useState(null);
   const [boxes, setBoxes] = useState([]);
+  const [aiSuggestions, setAiSuggestions] = useState([]);
+
   const [selectedId, setSelectedId] = useState(null);
+  const [selectedSuggestionId, setSelectedSuggestionId] =
+    useState(null);
+
   const [label, setLabel] = useState("car");
   const [drawing, setDrawing] = useState(null);
-  const [message, setMessage] = useState("");
+  const [confidenceThreshold, setConfidenceThreshold] =
+    useState(0.25);
+
   const [loading, setLoading] = useState(false);
+  const [predicting, setPredicting] = useState(false);
+  const [message, setMessage] = useState("");
 
   const transformerRef = useRef(null);
   const shapeRefs = useRef({});
@@ -38,59 +63,48 @@ export default function AnnotationCanvas({ imageUrl, imageId }) {
   const scale = image ? width / image.width : 1;
   const height = image ? image.height * scale : 0;
 
-  // Load the image when its URL changes.
+  const selectedSuggestion = aiSuggestions.find(
+    (suggestion) => suggestion.id === selectedSuggestionId
+  );
+
+  const visibleSuggestions = aiSuggestions.filter(
+    (suggestion) =>
+      suggestion.confidence >= confidenceThreshold
+  );
+
+  // Load the uploaded image.
   useEffect(() => {
     let cancelled = false;
-
     const img = new window.Image();
 
+    setImage(null);
+    setBoxes([]);
+    setAiSuggestions([]);
+    setSelectedId(null);
+    setSelectedSuggestionId(null);
+    setDrawing(null);
+    setMessage("");
+    shapeRefs.current = {};
+
     img.onload = () => {
-      if (!cancelled) {
-        setImage(img);
-      }
+      if (!cancelled) setImage(img);
     };
 
     img.onerror = () => {
       if (!cancelled) {
         setImage(null);
-        setMessage("Could not load the image.");
+        setMessage("Could not load image.");
       }
     };
 
-    setImage(null);
-    setBoxes([]);
-    setSelectedId(null);
-    setDrawing(null);
-    setMessage("");
-    shapeRefs.current = {};
-
-    if (imageUrl) {
-      img.src = imageUrl;
-    }
+    if (imageUrl) img.src = imageUrl;
 
     return () => {
       cancelled = true;
     };
   }, [imageUrl]);
 
-  // Convert saved original-image coordinates to canvas coordinates.
-  function annotationsToBoxes(annotations, imageScale) {
-    return annotations.map((annotation) => ({
-      id: String(annotation.annotation_id),
-      label: annotation.label,
-      source: annotation.source ?? "manual",
-      confidence: annotation.confidence ?? null,
-      x: annotation.bbox.x_min * imageScale,
-      y: annotation.bbox.y_min * imageScale,
-      width:
-        (annotation.bbox.x_max - annotation.bbox.x_min) * imageScale,
-      height:
-        (annotation.bbox.y_max - annotation.bbox.y_min) * imageScale,
-    }));
-  }
-
-  // Automatically load saved boxes after the image loads,
-  // including after a browser refresh.
+  // Restore final annotations, never pending AI suggestions.
   useEffect(() => {
     if (!image || !imageId) return;
 
@@ -107,17 +121,20 @@ export default function AnnotationCanvas({ imageUrl, imageId }) {
         }
 
         const data = await response.json();
-        const imageScale = Math.min(900, image.width) / image.width;
+        const imageScale =
+          Math.min(900, image.width) / image.width;
 
         if (!cancelled) {
           setBoxes(
-            annotationsToBoxes(data.annotations, imageScale)
+            data.annotations.map((item) =>
+              toCanvasBox(item, imageScale)
+            )
           );
           setSelectedId(null);
         }
       } catch (error) {
         if (!cancelled) {
-          setMessage(`Auto-load failed: ${error.message}`);
+          setMessage(`Restore failed: ${error.message}`);
         }
       }
     }
@@ -129,28 +146,185 @@ export default function AnnotationCanvas({ imageUrl, imageId }) {
     };
   }, [image, imageId]);
 
-  // Attach resize handles to the selected rectangle.
+  // Connect the transformer to a selected final box.
   useEffect(() => {
     const transformer = transformerRef.current;
 
     if (!transformer) return;
 
-    const selectedNode = shapeRefs.current[selectedId];
+    const node = shapeRefs.current[selectedId];
 
-    transformer.nodes(selectedNode ? [selectedNode] : []);
+    transformer.nodes(node ? [node] : []);
     transformer.getLayer()?.batchDraw();
   }, [selectedId, boxes]);
 
-  function getPointer(event) {
-    const stage = event.target.getStage();
-    return stage?.getPointerPosition();
+  function selectFinalBox(box) {
+    setSelectedId(box.id);
+    setSelectedSuggestionId(null);
+    setLabel(box.label);
+  }
+
+  function selectSuggestion(suggestion) {
+    setSelectedSuggestionId(suggestion.id);
+    setSelectedId(null);
+    setLabel(suggestion.label);
+  }
+
+  function removeSuggestion(id) {
+    setAiSuggestions((previous) =>
+      previous.filter((item) => item.id !== id)
+    );
+    setSelectedSuggestionId(null);
+  }
+
+  async function generateAiSuggestions() {
+    if (!image || !imageId || predicting || loading) return;
+
+    if (aiSuggestions.length > 0) {
+      const proceed = window.confirm(
+        "Generate again? Existing pending suggestions will be replaced."
+      );
+      if (!proceed) return;
+    }
+
+    setPredicting(true);
+    setMessage("Generating AI suggestions...");
+
+    try {
+      const response = await fetch(
+        `${API_URL}/images/${imageId}/predict?conf=0.01`,
+        { method: "POST" }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      const suggestions = data.predictions.map(
+        (prediction) => ({
+          id: prediction.prediction_id,
+          label: prediction.label,
+          confidence: prediction.confidence,
+          x: prediction.bbox.x_min * scale,
+          y: prediction.bbox.y_min * scale,
+          width:
+            (prediction.bbox.x_max -
+              prediction.bbox.x_min) * scale,
+          height:
+            (prediction.bbox.y_max -
+              prediction.bbox.y_min) * scale,
+        })
+      );
+
+      setAiSuggestions(suggestions);
+      setSelectedSuggestionId(null);
+      setSelectedId(null);
+
+      setMessage(
+        `${suggestions.length} predictions generated. Review suggestions before saving.`
+      );
+    } catch (error) {
+      setMessage(`Prediction failed: ${error.message}`);
+    } finally {
+      setPredicting(false);
+    }
+  }
+
+  function acceptSuggestion() {
+    if (!selectedSuggestion) return;
+
+    const finalBox = {
+      ...selectedSuggestion,
+      source: "ai_accepted",
+    };
+
+    setBoxes((previous) => [...previous, finalBox]);
+    removeSuggestion(selectedSuggestion.id);
+    setSelectedId(finalBox.id);
+
+    setMessage(
+      "AI prediction accepted. Save annotations to persist."
+    );
+  }
+
+  function editSuggestion() {
+    if (!selectedSuggestion) return;
+
+    const editableBox = {
+      ...selectedSuggestion,
+      source: "ai_edited",
+    };
+
+    setBoxes((previous) => [...previous, editableBox]);
+    removeSuggestion(selectedSuggestion.id);
+    setSelectedId(editableBox.id);
+    setLabel(editableBox.label);
+
+    setMessage(
+      "AI box is now editable. Drag, resize, or change its class, then Save."
+    );
+  }
+
+  function rejectSuggestion() {
+    if (!selectedSuggestion) return;
+
+    removeSuggestion(selectedSuggestion.id);
+
+    setMessage(
+      "AI suggestion rejected. It will not be saved."
+    );
+  }
+
+  function updateBox(id, changes) {
+    setBoxes((previous) =>
+      previous.map((box) => {
+        if (box.id !== id) return box;
+
+        // Preserve the AI provenance when a human edits the box.
+        const source =
+          box.source === "ai_accepted" ||
+          box.source === "ai_edited" ||
+          box.source === "ai"
+            ? "ai_edited"
+            : "manual";
+
+        return {
+          ...box,
+          ...changes,
+          source,
+        };
+      })
+    );
+  }
+
+  function changeLabel(newLabel) {
+    setLabel(newLabel);
+
+    if (selectedId !== null) {
+      updateBox(selectedId, { label: newLabel });
+      setMessage("Label changed. Save to persist.");
+    }
+  }
+
+  function deleteSelected() {
+    if (selectedId === null) return;
+
+    setBoxes((previous) =>
+      previous.filter((box) => box.id !== selectedId)
+    );
+
+    setSelectedId(null);
+    setMessage("Final annotation deleted. Save to persist.");
   }
 
   function startDrawing(event) {
-    // Do not create a new box while selecting or dragging a box.
     if (event.target !== event.target.getStage()) return;
 
-    const pointer = getPointer(event);
+    const pointer =
+      event.target.getStage().getPointerPosition();
+
     if (!pointer) return;
 
     if (
@@ -163,6 +337,7 @@ export default function AnnotationCanvas({ imageUrl, imageId }) {
     }
 
     setSelectedId(null);
+    setSelectedSuggestionId(null);
 
     setDrawing({
       x: pointer.x,
@@ -175,7 +350,9 @@ export default function AnnotationCanvas({ imageUrl, imageId }) {
   function updateDrawing(event) {
     if (!drawing) return;
 
-    const pointer = getPointer(event);
+    const pointer =
+      event.target.getStage().getPointerPosition();
+
     if (!pointer) return;
 
     const x = clamp(pointer.x, 0, width);
@@ -226,44 +403,15 @@ export default function AnnotationCanvas({ imageUrl, imageId }) {
         },
       ]);
 
-      setMessage("New annotation created. Save to persist.");
+      setMessage(
+        "Manual annotation created. Save to persist."
+      );
     }
 
     setDrawing(null);
   }
 
-  function updateBox(id, changes) {
-    setBoxes((previous) =>
-      previous.map((box) =>
-        box.id === id
-          ? { ...box, ...changes, source: "manual" }
-          : box
-      )
-    );
-  }
-
-  function deleteSelected() {
-    if (selectedId === null) return;
-
-    setBoxes((previous) =>
-      previous.filter((box) => box.id !== selectedId)
-    );
-
-    setSelectedId(null);
-    setMessage("Annotation deleted. Save to persist.");
-  }
-
-  function changeSelectedLabel(newLabel) {
-    setLabel(newLabel);
-
-    if (selectedId !== null) {
-      updateBox(selectedId, { label: newLabel });
-      setMessage("Label changed. Save to persist.");
-    }
-  }
-
   function boxToAnnotation(box) {
-    // Save bounding boxes in original image pixel coordinates.
     const xMin = clamp(box.x / scale, 0, image.width);
     const yMin = clamp(box.y / scale, 0, image.height);
 
@@ -279,11 +427,8 @@ export default function AnnotationCanvas({ imageUrl, imageId }) {
       image.height
     );
 
-    if (
-      xMax <= xMin ||
-      yMax <= yMin
-    ) {
-      throw new Error("Invalid bounding box dimensions.");
+    if (xMax <= xMin || yMax <= yMin) {
+      throw new Error("Invalid bounding box.");
     }
 
     return {
@@ -308,6 +453,7 @@ export default function AnnotationCanvas({ imageUrl, imageId }) {
     setMessage("");
 
     try {
+      // Only reviewed or manually created boxes are saved.
       const annotations = boxes.map(boxToAnnotation);
 
       const response = await fetch(
@@ -330,7 +476,7 @@ export default function AnnotationCanvas({ imageUrl, imageId }) {
       }
 
       setMessage(
-        `Saved ${data.saved_count} annotations successfully.`
+        `Saved ${data.saved_count} final annotations.`
       );
     } catch (error) {
       setMessage(`Save failed: ${error.message}`);
@@ -356,11 +502,16 @@ export default function AnnotationCanvas({ imageUrl, imageId }) {
 
       const data = await response.json();
 
-      setBoxes(annotationsToBoxes(data.annotations, scale));
+      setBoxes(
+        data.annotations.map((item) =>
+          toCanvasBox(item, scale)
+        )
+      );
+
       setSelectedId(null);
 
       setMessage(
-        `Loaded ${data.annotations.length} annotations successfully.`
+        `Loaded ${data.annotations.length} final annotations.`
       );
     } catch (error) {
       setMessage(`Reload failed: ${error.message}`);
@@ -371,17 +522,15 @@ export default function AnnotationCanvas({ imageUrl, imageId }) {
 
   if (!image) {
     return (
-      <p>
-        {message || "Loading annotation image..."}
-      </p>
+      <p>{message || "Loading annotation image..."}</p>
     );
   }
 
   return (
     <div>
-      <h2>Manual Annotation Editor</h2>
+      <h2>Human-in-the-Loop Annotation Editor</h2>
 
-      <div style={{ marginBottom: 15 }}>
+      <div style={{ marginBottom: 12 }}>
         <label htmlFor="annotation-label">
           Object class:{" "}
         </label>
@@ -390,7 +539,7 @@ export default function AnnotationCanvas({ imageUrl, imageId }) {
           id="annotation-label"
           value={label}
           onChange={(event) =>
-            changeSelectedLabel(event.target.value)
+            changeLabel(event.target.value)
           }
         >
           <option value="car">Car</option>
@@ -402,23 +551,18 @@ export default function AnnotationCanvas({ imageUrl, imageId }) {
           type="button"
           onClick={deleteSelected}
           disabled={selectedId === null}
-          style={{ marginLeft: 15 }}
+          style={{ marginLeft: 12 }}
         >
           Delete Selected Box
         </button>
       </div>
 
-      <p>
-        Draw a box around an object. Click a box to move,
-        resize, change its label, or delete it.
-      </p>
-
       <div
         style={{
           display: "flex",
           gap: 12,
-          marginBottom: 16,
           flexWrap: "wrap",
+          marginBottom: 12,
         }}
       >
         <button
@@ -436,11 +580,109 @@ export default function AnnotationCanvas({ imageUrl, imageId }) {
         >
           Reload Annotations
         </button>
+
+        <button
+          type="button"
+          onClick={generateAiSuggestions}
+          disabled={predicting || loading}
+        >
+          {predicting
+            ? "Generating..."
+            : "Generate AI Suggestions"}
+        </button>
       </div>
 
-      {message && (
-        <p role="status">{message}</p>
+      <div style={{ marginBottom: 12 }}>
+        <label htmlFor="confidence-slider">
+          Confidence threshold:{" "}
+          <strong>{confidenceThreshold.toFixed(2)}</strong>
+        </label>
+
+        <input
+          id="confidence-slider"
+          type="range"
+          min="0.01"
+          max="1"
+          step="0.01"
+          value={confidenceThreshold}
+          onChange={(event) => {
+            setConfidenceThreshold(
+              Number(event.target.value)
+            );
+            setSelectedSuggestionId(null);
+          }}
+          style={{ marginLeft: 12 }}
+        />
+      </div>
+
+      <p>
+        <strong>Final annotations:</strong> {boxes.length}
+        {" | "}
+        <strong>Pending AI suggestions:</strong>{" "}
+        {aiSuggestions.length}
+        {" | "}
+        <strong>Visible pending:</strong>{" "}
+        {visibleSuggestions.length}
+      </p>
+
+      <p>
+        Yellow dashed = pending AI prediction.
+        Solid colored = final annotation.
+      </p>
+
+      {selectedSuggestion && (
+        <div
+          style={{
+            border: "1px solid #eab308",
+            padding: 12,
+            marginBottom: 12,
+          }}
+        >
+          <p>
+            <strong>Selected AI suggestion:</strong>{" "}
+            {selectedSuggestion.label}
+            {" | "}
+            Confidence:{" "}
+            {selectedSuggestion.confidence.toFixed(3)}
+          </p>
+
+          <div
+            style={{
+              display: "flex",
+              gap: 10,
+              flexWrap: "wrap",
+            }}
+          >
+            <button
+              type="button"
+              onClick={acceptSuggestion}
+            >
+              Accept
+            </button>
+
+            <button
+              type="button"
+              onClick={editSuggestion}
+            >
+              Edit
+            </button>
+
+            <button
+              type="button"
+              onClick={rejectSuggestion}
+            >
+              Reject
+            </button>
+          </div>
+        </div>
       )}
+
+      {message && <p role="status">{message}</p>}
+
+      <p>
+        Click a yellow AI box to review it.
+        Click a solid box to move, resize, or relabel it.
+      </p>
 
       <div
         style={{
@@ -462,7 +704,56 @@ export default function AnnotationCanvas({ imageUrl, imageId }) {
               height={height}
               listening={false}
             />
+          </Layer>
 
+          {/* Pending predictions stay separate from final boxes. */}
+          <Layer>
+            {visibleSuggestions.map((suggestion) => (
+              <Rect
+                key={`pending-${suggestion.id}`}
+                x={suggestion.x}
+                y={suggestion.y}
+                width={suggestion.width}
+                height={suggestion.height}
+                stroke={
+                  selectedSuggestionId === suggestion.id
+                    ? "#f97316"
+                    : "#eab308"
+                }
+                strokeWidth={
+                  selectedSuggestionId === suggestion.id
+                    ? 3
+                    : 2
+                }
+                dash={[8, 5]}
+                onClick={() =>
+                  selectSuggestion(suggestion)
+                }
+                onTap={() =>
+                  selectSuggestion(suggestion)
+                }
+              />
+            ))}
+
+            {selectedSuggestion &&
+              selectedSuggestion.confidence >=
+                confidenceThreshold && (
+                <KonvaText
+                  x={selectedSuggestion.x}
+                  y={Math.max(
+                    0,
+                    selectedSuggestion.y - 19
+                  )}
+                  text={`${selectedSuggestion.label} ${selectedSuggestion.confidence.toFixed(2)}`}
+                  fontSize={15}
+                  fill="#eab308"
+                  listening={false}
+                />
+              )}
+          </Layer>
+
+          {/* Final human annotations. */}
+          <Layer>
             {boxes.map((box) => (
               <Rect
                 key={box.id}
@@ -477,7 +768,9 @@ export default function AnnotationCanvas({ imageUrl, imageId }) {
                 y={box.y}
                 width={box.width}
                 height={box.height}
-                stroke={COLORS[box.label] ?? "#ffffff"}
+                stroke={
+                  COLORS[box.label] ?? "#ffffff"
+                }
                 strokeWidth={2}
                 draggable
                 dragBoundFunc={(position) => ({
@@ -492,8 +785,8 @@ export default function AnnotationCanvas({ imageUrl, imageId }) {
                     Math.max(0, height - box.height)
                   ),
                 })}
-                onClick={() => setSelectedId(box.id)}
-                onTap={() => setSelectedId(box.id)}
+                onClick={() => selectFinalBox(box)}
+                onTap={() => selectFinalBox(box)}
                 onDragEnd={(event) => {
                   updateBox(box.id, {
                     x: event.target.x(),
@@ -593,10 +886,6 @@ export default function AnnotationCanvas({ imageUrl, imageId }) {
           </Layer>
         </Stage>
       </div>
-
-      <p>
-        <strong>Total annotations:</strong> {boxes.length}
-      </p>
     </div>
   );
 }
