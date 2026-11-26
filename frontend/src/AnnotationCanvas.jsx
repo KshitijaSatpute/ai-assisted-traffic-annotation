@@ -545,6 +545,22 @@ function addCustomClass() {
       </div>
       <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 12 }}>
         <button onClick={saveAnnotations} disabled={loading || sessionBusy}>Save Annotations</button>
+
+<a
+  href={`${API_URL}/exports/coco`}
+  download="annotations_coco.json"
+  style={{
+    display: "inline-block",
+    padding: "10px 14px",
+    backgroundColor: "#2563eb",
+    color: "white",
+    borderRadius: 5,
+    textDecoration: "none",
+  }}
+>
+  Export COCO JSON
+</a>
+
         <button onClick={reloadAnnotations} disabled={loading || sessionBusy}>Reload Annotations</button>
         <button onClick={generateAiSuggestions} disabled={predicting || loading || (session && session.mode === "manual") || sessionBusy}>
           {predicting ? "Generating..." : "Generate AI Suggestions"}

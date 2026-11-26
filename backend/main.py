@@ -642,3 +642,123 @@ def get_annotation_session(session_id: str):
         "event_counts": event_counts,
         "events": event_list,
     }
+
+
+# ---------------------------------------------------------
+# COCO dataset export
+# ---------------------------------------------------------
+
+from fastapi.responses import Response
+
+
+@app.get("/exports/coco")
+def export_coco():
+    with get_db() as connection:
+        rows = connection.execute(
+            """
+            SELECT image_id, annotations_json
+            FROM image_annotations
+            ORDER BY image_id
+            """
+        ).fetchall()
+
+    images = []
+    annotations = []
+    saved_items = []
+
+    for image_number, (image_id, annotations_json) in enumerate(
+        rows, start=1
+    ):
+        canonical_id, (width, height) = validate_image(image_id)
+
+        image_path = next(
+            (
+                UPLOAD_DIR / f"{canonical_id}{extension}"
+                for extension in (".jpg", ".png")
+                if (UPLOAD_DIR / f"{canonical_id}{extension}").is_file()
+            ),
+            None,
+        )
+
+        if image_path is None:
+            raise HTTPException(
+                status_code=409,
+                detail=f"Missing image file: {image_id}",
+            )
+
+        images.append({
+            "id": image_number,
+            "file_name": image_path.name,
+            "width": width,
+            "height": height,
+        })
+
+        for raw_item in json.loads(annotations_json):
+            item = SavedAnnotation.model_validate(raw_item)
+            if item.image_id != canonical_id:
+                raise HTTPException(
+                    status_code=409,
+                    detail=f"Annotation image mismatch: {image_id}",
+                )
+            saved_items.append((image_number, item))
+
+    labels = sorted({item.label for _, item in saved_items})
+
+    category_ids = {
+        label: index
+        for index, label in enumerate(labels, start=1)
+    }
+
+    categories = [
+        {
+            "id": category_ids[label],
+            "name": label,
+            "supercategory": "object",
+        }
+        for label in labels
+    ]
+
+    for annotation_number, (image_number, item) in enumerate(
+        saved_items, start=1
+    ):
+        box = item.bbox
+
+        x = box.x_min
+        y = box.y_min
+        width = box.x_max - box.x_min
+        height = box.y_max - box.y_min
+
+        annotations.append({
+            "id": annotation_number,
+            "image_id": image_number,
+            "category_id": category_ids[item.label],
+            "bbox": [x, y, width, height],
+            "area": width * height,
+            "segmentation": [],
+            "iscrowd": 0,
+            "attributes": {
+                "source": item.source,
+                "confidence": item.confidence,
+                "annotation_id": item.annotation_id,
+            },
+        })
+
+    coco = {
+        "info": {
+            "description": "Human-reviewed image annotations",
+            "version": "1.0",
+        },
+        "licenses": [],
+        "images": images,
+        "annotations": annotations,
+        "categories": categories,
+    }
+
+    return Response(
+        content=json.dumps(coco, indent=2),
+        media_type="application/json",
+        headers={
+            "Content-Disposition":
+                'attachment; filename="annotations_coco.json"'
+        },
+    )
