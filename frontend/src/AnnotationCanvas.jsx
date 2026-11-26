@@ -6,6 +6,22 @@ import {
 
 const API_URL = "http://127.0.0.1:8000";
 const COLORS = { car: "#22c55e", truck: "#f97316", pedestrian: "#3b82f6" };
+const DEFAULT_LABELS = ["car", "truck", "pedestrian"];
+const CUSTOM_LABELS_STORAGE_KEY = "annotation_custom_labels_v1";
+const isValidClassName = (name) => /^[a-z][a-z0-9_-]{0,49}$/.test(name);
+
+function loadCustomLabels() {
+  try {
+    const stored = JSON.parse(window.localStorage.getItem(CUSTOM_LABELS_STORAGE_KEY) || "[]");
+    if (!Array.isArray(stored)) return [];
+    return [...new Set(stored.filter((name) =>
+      typeof name === "string" && isValidClassName(name) && !DEFAULT_LABELS.includes(name)
+    ))];
+  } catch {
+    return [];
+  }
+}
+
 const MIN_BOX_SIZE = 5;
 const clamp = (value, min, max) => Math.max(min, Math.min(value, max));
 const formatTime = (ms) => {
@@ -33,6 +49,10 @@ export default function AnnotationCanvas({ imageUrl, imageId }) {
   const [selectedId, setSelectedId] = useState(null);
   const [selectedSuggestionId, setSelectedSuggestionId] = useState(null);
   const [label, setLabel] = useState("car");
+
+  const [customLabels, setCustomLabels] = useState(loadCustomLabels);
+  const [newClassName, setNewClassName] = useState("");
+
   const [drawing, setDrawing] = useState(null);
   const [confidenceThreshold, setConfidenceThreshold] = useState(0.25);
   const [loading, setLoading] = useState(false);
@@ -55,6 +75,24 @@ export default function AnnotationCanvas({ imageUrl, imageId }) {
   const sessionRef = useRef(null);
   const sessionBusyRef = useRef(false);
   const inferenceTotalRef = useRef(0);
+
+  // Keep the class vocabulary available after a browser refresh.
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(CUSTOM_LABELS_STORAGE_KEY, JSON.stringify(customLabels));
+    } catch {
+      // Annotation storage still works if browser storage is disabled.
+    }
+  }, [customLabels]);
+
+  function includeSavedLabels(annotations) {
+    const discovered = annotations
+      .map((item) => item.label)
+      .filter((name) => typeof name === "string" && isValidClassName(name) && !DEFAULT_LABELS.includes(name));
+    if (discovered.length) {
+      setCustomLabels((previous) => [...new Set([...previous, ...discovered])]);
+    }
+  }
 
   const width = image ? Math.min(900, image.width) : 0;
   const scale = image ? width / image.width : 1;
@@ -211,6 +249,7 @@ setSelectedId(null);
         const data = await response.json();
         const imageScale = Math.min(900, image.width) / image.width;
         if (!cancelled) {
+          includeSavedLabels(data.annotations);
           setBoxes(data.annotations.map((a) => annotationToBox(a, imageScale)));
           setSelectedId(null);
         }
@@ -334,6 +373,31 @@ function editSuggestion() {
       recordEvent("ai_edit", id, { changes });
     }
   }
+
+function addCustomClass() {
+  const name = newClassName.trim().toLowerCase().replace(/\s+/g, "_");
+
+  if (!isValidClassName(name)) {
+    setMessage("Class name must start with a letter and contain only letters, numbers, _ or - (max 50 characters).");
+    return;
+  }
+
+  const existing = [...DEFAULT_LABELS, ...customLabels];
+
+  if (existing.includes(name)) {
+    setMessage("This class already exists.");
+    setLabel(name);
+    return;
+  }
+
+  setCustomLabels((previous) => [...previous, name]);
+  setLabel(name);
+  setNewClassName("");
+  setSelectedId(null);
+  setSelectedSuggestionId(null);
+  setMessage(`Custom class "${name}" added. Draw a box to annotate it.`);
+}
+
   function changeLabel(next) {
     setLabel(next);
     if (selectedId !== null) {
@@ -424,6 +488,7 @@ function editSuggestion() {
       const response = await fetch(`${API_URL}/images/${imageId}/annotations`);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const data = await response.json();
+      includeSavedLabels(data.annotations);
       setBoxes(data.annotations.map((a) => annotationToBox(a, scale)));
       setSelectedId(null);
       setMessage(`Loaded ${data.annotations.length} final annotations.`);
@@ -461,9 +526,22 @@ function editSuggestion() {
       <div style={{ marginBottom: 12 }}>
         <label htmlFor="annotation-label">Object class: </label>
         <select id="annotation-label" value={label} onChange={(e) => changeLabel(e.target.value)}>
-          <option value="car">Car</option><option value="truck">Truck</option><option value="pedestrian">Pedestrian</option>
+          <option value="car">Car</option>
+          <option value="truck">Truck</option>
+          <option value="pedestrian">Pedestrian</option>
+          {customLabels.map((className) => (
+            <option key={className} value={className}>{className}</option>
+          ))}
         </select>
-        <button type="button" onClick={deleteSelected} disabled={selectedId === null} style={{ marginLeft: 12 }}>Delete Selected Box</button>
+        <button type="button" onClick={deleteSelected} disabled={selectedId === null}
+          style={{ marginLeft: 12 }}>Delete Selected Box</button>
+        <div style={{ marginTop: 10, display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <input type="text" aria-label="New class name" value={newClassName}
+            onChange={(e) => setNewClassName(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") addCustomClass(); }}
+            placeholder="New class, e.g. helmet" maxLength={50}/>
+          <button type="button" onClick={addCustomClass}>Add Custom Class</button>
+        </div>
       </div>
       <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 12 }}>
         <button onClick={saveAnnotations} disabled={loading || sessionBusy}>Save Annotations</button>
@@ -512,7 +590,12 @@ function editSuggestion() {
             {boxes.map((box) => <Rect key={box.id}
               ref={(node) => { if (node) shapeRefs.current[box.id] = node; else delete shapeRefs.current[box.id]; }}
               x={box.x} y={box.y} width={box.width} height={box.height}
-              stroke={COLORS[box.label] ?? "#ffffff"} strokeWidth={2} draggable
+              
+stroke={COLORS[box.label] ?? "#a855f7"}
+strokeWidth={2}
+fill="rgba(0,0,0,0.001)"
+draggable
+
               dragBoundFunc={(pos) => ({
                 x: clamp(pos.x, 0, Math.max(0, width - box.width)),
                 y: clamp(pos.y, 0, Math.max(0, height - box.height)),
@@ -533,7 +616,7 @@ function editSuggestion() {
             {drawing && <Rect x={Math.min(drawing.x, drawing.x + drawing.width)}
               y={Math.min(drawing.y, drawing.y + drawing.height)}
               width={Math.abs(drawing.width)} height={Math.abs(drawing.height)}
-              stroke={COLORS[label]} strokeWidth={2} dash={[6, 4]} listening={false}/>}
+              stroke={COLORS[label] ?? "#a855f7"} strokeWidth={2} dash={[6, 4]} listening={false}/>}
             <Transformer ref={transformerRef} rotateEnabled={false} flipEnabled={false}
               boundBoxFunc={(oldBox, next) => {
                 const valid = next.width >= MIN_BOX_SIZE && next.height >= MIN_BOX_SIZE &&

@@ -36,13 +36,19 @@ class BoundingBox(BaseModel):
 
 
 
+
 class Annotation(BaseModel):
     annotation_id: str
     image_id: str
-    label: Literal["car", "truck", "pedestrian"]
+    label: str = Field(
+        min_length=1,
+        max_length=50,
+        pattern=r"^[a-z][a-z0-9_-]*$",
+    )
     bbox: BoundingBox
     source: Literal["manual", "ai", "ai_accepted", "ai_edited"]
     confidence: float | None = Field(default=None, ge=0, le=1)
+
 
 
 @app.get("/health")
