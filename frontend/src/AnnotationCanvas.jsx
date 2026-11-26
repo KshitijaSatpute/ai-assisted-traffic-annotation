@@ -176,6 +176,8 @@ export default function AnnotationCanvas({ imageUrl, imageId }) {
       const data = await response.json();
       sessionRef.current = null;
       setSession(null);
+      setBoxes((all) => all.filter((box) => box.source !== "ai"));
+setSelectedId(null);
       setPaused(false);
       setMessage(`Session completed. Human session time: ${formatTime(duration)}. ID: ${data.session_id}`);
     } catch (error) {
@@ -286,24 +288,24 @@ export default function AnnotationCanvas({ imageUrl, imageId }) {
     setMessage("AI suggestion accepted. Save annotations to persist.");
   }
   
+
 function editSuggestion() {
   if (!selectedSuggestion || !canEdit()) return;
 
-  // Select the AI suggestion for editing.
-  // Do not count entering edit mode as an explicit acceptance.
+  // "ai" is temporary until the user actually modifies the box.
   const box = {
     ...selectedSuggestion,
-    source: "ai_accepted",
+    source: "ai",
   };
 
   setBoxes((all) => [...all, box]);
   removeSuggestion(box.id);
-
   setSelectedId(box.id);
   setLabel(box.label);
 
-  // ai_edit is recorded by updateBox only after a real change.
-  setMessage("Edit this box by dragging, resizing, or changing class.");
+  setMessage(
+    "Edit the box by moving, resizing, or changing its class. Unchanged edit previews are not saved."
+  );
 }
 
   function rejectSuggestion() {
@@ -392,7 +394,9 @@ function editSuggestion() {
   async function persistAnnotations() {
     const response = await fetch(`${API_URL}/images/${imageId}/annotations`, {
       method: "PUT", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(boxes.map(serializeBox)),
+      body: JSON.stringify(
+  boxes.filter((box) => box.source !== "ai").map(serializeBox)
+),
     });
     if (!response.ok) {
       const payload = await response.text();
