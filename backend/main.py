@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field
 from PIL import Image, UnidentifiedImageError
 
 app = FastAPI(
-    title="AI-Assisted Traffic Annotation API",
+    title="AI-Assisted Image Annotation API",
     version="0.1.0",
 )
 

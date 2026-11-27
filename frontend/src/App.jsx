@@ -68,12 +68,12 @@ localStorage.setItem(
   return (
     <main className="app">
       <header>
-        <h1>AI-Assisted Traffic Annotation</h1>
-        <p>Upload traffic images for manual and AI-assisted annotation.</p>
+        <h1>AI-Assisted Image Annotation Platform</h1>
+        <p>Upload any image, define custom labels, and annotate with AI assistance.</p>
       </header>
 
       <section className="upload-card">
-        <h2>Upload Traffic Image</h2>
+        <h2>Upload Image</h2>
 
         <input
           type="file"
