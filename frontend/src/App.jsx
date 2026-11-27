@@ -255,15 +255,16 @@ function App() {
             </p>
 
             <AnnotationCanvas
-              key={uploadedImage.image_id}
-              imageUrl={uploadedImage.url}
-              imageId={uploadedImage.image_id}
-              projectLabels={
-                uploadedImage.projectId
-                  ? selectedProject?.labels ?? []
-                  : null
-              }
-            />
+  key={uploadedImage.image_id}
+  imageUrl={uploadedImage.url}
+  imageId={uploadedImage.image_id}
+  projectId={uploadedImage.projectId || null}
+  projectLabels={
+    uploadedImage.projectId
+      ? selectedProject?.labels ?? []
+      : null
+  }
+/>
           </div>
         )}
       </section>

@@ -811,3 +811,8 @@ def export_coco():
 from backend.projects import router as projects_router
 
 app.include_router(projects_router)
+
+
+from backend.open_vocab import router as open_vocab_router
+
+app.include_router(open_vocab_router)

@@ -42,7 +42,7 @@ function annotationToBox(item, scale) {
   };
 }
 
-export default function AnnotationCanvas({ imageUrl, imageId, projectLabels = null }) {
+export default function AnnotationCanvas({ imageUrl, imageId, projectLabels = null, projectId = null }) {
   const [image, setImage] = useState(null);
   const [boxes, setBoxes] = useState([]);
   const [aiSuggestions, setAiSuggestions] = useState([]);
@@ -301,7 +301,11 @@ setSelectedId(null);
     const shouldResume = Boolean(session && clockRef.current.since !== null);
     if (shouldResume) pauseClock();
     try {
-      const response = await fetch(`${API_URL}/images/${imageId}/predict?conf=0.01`, { method: "POST" });
+      const endpoint = projectId
+  ? `${API_URL}/projects/${projectId}/images/${imageId}/predict?conf=0.01`
+  : `${API_URL}/images/${imageId}/predict?conf=0.01`;
+
+const response = await fetch(endpoint, { method: "POST" });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const data = await response.json();
       setAiSuggestions(data.predictions.map((p) => ({

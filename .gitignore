@@ -12,3 +12,6 @@ backend/data/
 
 study_data/
 
+
+models/*.pt
+
