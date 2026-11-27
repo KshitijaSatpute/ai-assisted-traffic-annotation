@@ -762,3 +762,8 @@ def export_coco():
                 'attachment; filename="annotations_coco.json"'
         },
     )
+
+# Register project-management endpoints.
+from backend.projects import router as projects_router
+
+app.include_router(projects_router)

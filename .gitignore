@@ -9,3 +9,6 @@ backend/uploads/
 
 # Local annotation database
 backend/data/
+
+study_data/
+
