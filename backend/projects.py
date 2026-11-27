@@ -38,6 +38,18 @@ def initialize_projects():
                     ON DELETE CASCADE
             )
         """)
+        
+        db.execute("""
+            CREATE TABLE IF NOT EXISTS project_images (
+                image_id TEXT PRIMARY KEY,
+                project_id TEXT NOT NULL,
+                uploaded_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (project_id)
+                    REFERENCES projects(project_id)
+                    ON DELETE CASCADE
+            )
+        """)
+
 
 
 initialize_projects()
@@ -213,3 +225,65 @@ def delete_project_label(project_id: str, label: str):
             )
 
     return {"status": "deleted", "label": label}
+
+
+from fastapi import File, UploadFile
+
+
+@router.post("/{project_id}/images/upload", status_code=201)
+async def upload_image_to_project(
+    project_id: str,
+    file: UploadFile = File(...),
+):
+    project_id = validate_project_id(project_id)
+
+    with get_db() as db:
+        require_project(db, project_id)
+
+    # Reuse the validated upload implementation.
+    from backend.main import upload_image
+
+    image_data = await upload_image(file)
+
+    with get_db() as db:
+        db.execute(
+            """
+            INSERT INTO project_images (image_id, project_id)
+            VALUES (?, ?)
+            """,
+            (image_data["image_id"], project_id),
+        )
+
+    return {
+        **image_data,
+        "project_id": project_id,
+    }
+
+
+@router.get("/{project_id}/images")
+def list_project_images(project_id: str):
+    project_id = validate_project_id(project_id)
+
+    with get_db() as db:
+        require_project(db, project_id)
+
+        images = db.execute(
+            """
+            SELECT image_id, uploaded_at
+            FROM project_images
+            WHERE project_id = ?
+            ORDER BY uploaded_at DESC, image_id DESC
+            """,
+            (project_id,),
+        ).fetchall()
+
+    return {
+        "project_id": project_id,
+        "images": [
+            {
+                **dict(image),
+                "image_url": f"/images/{image['image_id']}",
+            }
+            for image in images
+        ],
+    }
