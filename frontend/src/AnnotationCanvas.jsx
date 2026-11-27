@@ -42,7 +42,7 @@ function annotationToBox(item, scale) {
   };
 }
 
-export default function AnnotationCanvas({ imageUrl, imageId }) {
+export default function AnnotationCanvas({ imageUrl, imageId, projectLabels = null }) {
   const [image, setImage] = useState(null);
   const [boxes, setBoxes] = useState([]);
   const [aiSuggestions, setAiSuggestions] = useState([]);
@@ -51,6 +51,12 @@ export default function AnnotationCanvas({ imageUrl, imageId }) {
   const [label, setLabel] = useState("car");
 
   const [customLabels, setCustomLabels] = useState(loadCustomLabels);
+  const availableLabels = projectLabels ?? [...DEFAULT_LABELS, ...customLabels];
+  useEffect(() => {
+  if (projectLabels !== null) {
+    setLabel(projectLabels[0] ?? "");
+  }
+}, [projectLabels]);
   const [newClassName, setNewClassName] = useState("");
 
   const [drawing, setDrawing] = useState(null);
@@ -526,12 +532,11 @@ function addCustomClass() {
       <div style={{ marginBottom: 12 }}>
         <label htmlFor="annotation-label">Object class: </label>
         <select id="annotation-label" value={label} onChange={(e) => changeLabel(e.target.value)}>
-          <option value="car">Car</option>
-          <option value="truck">Truck</option>
-          <option value="pedestrian">Pedestrian</option>
-          {customLabels.map((className) => (
-            <option key={className} value={className}>{className}</option>
-          ))}
+        {availableLabels.map((className) => (
+  <option key={className} value={className}>
+    {className}
+  </option>
+))}
         </select>
         <button type="button" onClick={deleteSelected} disabled={selectedId === null}
           style={{ marginLeft: 12 }}>Delete Selected Box</button>
@@ -540,7 +545,11 @@ function addCustomClass() {
             onChange={(e) => setNewClassName(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") addCustomClass(); }}
             placeholder="New class, e.g. helmet" maxLength={50}/>
-          <button type="button" onClick={addCustomClass}>Add Custom Class</button>
+          {projectLabels === null && (
+  <button type="button" onClick={addCustomClass}>
+    Add Custom Class
+  </button>
+)}
         </div>
       </div>
       <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 12 }}>
