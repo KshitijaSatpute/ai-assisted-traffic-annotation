@@ -197,6 +197,50 @@ def save_annotations(
                 detail="Bounding box exceeds image dimensions",
             )
 
+
+    # Validate labels for project-associated images.
+    # Legacy study images remain unaffected.
+    with get_db() as connection:
+        project_row = connection.execute(
+            """
+            SELECT project_id
+            FROM project_images
+            WHERE image_id = ?
+            """,
+            (canonical_id,),
+        ).fetchone()
+
+        if project_row is not None:
+            project_id = project_row[0]
+
+            allowed_labels = {
+                row[0]
+                for row in connection.execute(
+                    """
+                    SELECT label
+                    FROM project_labels
+                    WHERE project_id = ?
+                    """,
+                    (project_id,),
+                ).fetchall()
+            }
+
+            invalid_labels = sorted({
+                annotation.label
+                for annotation in annotations
+                if annotation.label not in allowed_labels
+            })
+
+            if invalid_labels:
+                raise HTTPException(
+                    status_code=422,
+                    detail=(
+                        "Labels not allowed in this project: "
+                        + ", ".join(invalid_labels)
+                    ),
+                )
+
+
     payload = json.dumps(
         [annotation.model_dump() for annotation in annotations]
     )
