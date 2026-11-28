@@ -816,3 +816,5 @@ app.include_router(projects_router)
 from backend.open_vocab import router as open_vocab_router
 
 app.include_router(open_vocab_router)
+from backend.project_export import router as project_export_router
+app.include_router(project_export_router)
