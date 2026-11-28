@@ -7,6 +7,9 @@ const API_URL = "http://127.0.0.1:8000";
 
 function App() {
   const [projects, setProjects] = useState([]);
+  const [projectImages, setProjectImages] = useState([]);
+const [galleryRefresh, setGalleryRefresh] = useState(0);
+const [galleryLoading, setGalleryLoading] = useState(false);
   const [projectId, setProjectId] = useState("");
   const [projectName, setProjectName] = useState("");
   const [newLabel, setNewLabel] = useState("");
@@ -31,6 +34,66 @@ function App() {
   useEffect(() => {
     loadProjects().catch((err) => setError(err.message));
   }, []);
+
+useEffect(() => {
+  let cancelled = false;
+
+  if (!projectId) {
+    setProjectImages([]);
+    setGalleryLoading(false);
+    return;
+  }
+
+  async function fetchProjectImages() {
+    setGalleryLoading(true);
+
+    try {
+      const response = await fetch(
+        `${API_URL}/projects/${projectId}/images`
+      );
+
+      if (!response.ok) {
+        throw new Error("Cannot load project images.");
+      }
+
+      const data = await response.json();
+
+      if (!cancelled) {
+        setProjectImages(data.images);
+      }
+    } catch (err) {
+      if (!cancelled) {
+        setError(err.message);
+        setProjectImages([]);
+      }
+    } finally {
+      if (!cancelled) {
+        setGalleryLoading(false);
+      }
+    }
+  }
+
+  fetchProjectImages();
+
+  return () => {
+    cancelled = true;
+  };
+}, [projectId, galleryRefresh]);
+
+function openGalleryImage(image) {
+  setUploadedImage({
+    image_id: image.image_id,
+    image_url: image.image_url,
+    url: `${API_URL}${image.image_url}`,
+    projectId,
+    width: null,
+    height: null,
+  });
+
+  setMessage("Image opened. Existing annotations will load.");
+  setError("");
+}
+
 
   async function createProject() {
     const name = projectName.trim();
@@ -147,7 +210,7 @@ function App() {
         url: `${API_URL}${data.image_url}`,
         projectId,
       });
-
+setGalleryRefresh((value) => value + 1);
       setMessage("Image uploaded successfully.");
     } catch (err) {
       setError(err.message);
@@ -272,6 +335,37 @@ function App() {
               {loading ? "Uploading..." : "Upload Image"}
             </button>
           </section>
+
+{projectId && (
+  <section className="sidebar-section">
+    <h3>04 / My Images</h3>
+
+    {galleryLoading && <p>Loading images...</p>}
+
+    {!galleryLoading && projectImages.length === 0 && (
+      <p className="gallery-empty">No images uploaded yet.</p>
+    )}
+
+    <div className="image-gallery">
+      {projectImages.map((image) => (
+        <button
+          key={image.image_id}
+          type="button"
+          className="gallery-item"
+          onClick={() => openGalleryImage(image)}
+          title={`Open image ${image.image_id}`}
+        >
+          <img
+            src={`${API_URL}${image.image_url}`}
+            alt="Project upload"
+            loading="lazy"
+          />
+          <span>{image.image_id.slice(0, 8)}</span>
+        </button>
+      ))}
+    </div>
+  </section>
+)}
 
           {error && <p role="alert" className="error">{error}</p>}
           {message && <p role="status" className="studio-message">{message}</p>}
