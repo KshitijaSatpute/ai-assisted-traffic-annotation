@@ -1,0 +1,32 @@
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "8001:8000"
+    volumes:
+      - labelix_db:/app/backend/data
+      - labelix_uploads:/app/backend/uploads
+      - ./models:/app/models:ro
+      - ./yolo11n.pt:/app/yolo11n.pt:ro
+    environment:
+      - YOLO_CONFIG_DIR=/tmp/ultralytics
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        VITE_API_URL: http://127.0.0.1:8001
+    ports:
+      - "5174:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  labelix_db:
+  labelix_uploads:

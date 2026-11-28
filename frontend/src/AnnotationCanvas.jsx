@@ -3,8 +3,8 @@ import {
   Stage, Layer, Image as KonvaImage, Rect, Transformer,
   Text as KonvaText,
 } from "react-konva";
+const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
-const API_URL = "http://127.0.0.1:8000";
 const COLORS = { car: "#22c55e", truck: "#f97316", pedestrian: "#3b82f6" };
 const DEFAULT_LABELS = ["car", "truck", "pedestrian"];
 const CUSTOM_LABELS_STORAGE_KEY = "annotation_custom_labels_v1";
