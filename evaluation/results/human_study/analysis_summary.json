@@ -1,0 +1,44 @@
+{
+  "manual": {
+    "trials": 6,
+    "total_annotations": 30,
+    "mean_active_seconds": 107.877,
+    "median_active_seconds": 60.034,
+    "mean_wall_seconds": 107.877,
+    "median_wall_seconds": 60.034,
+    "min_active_seconds": 32.993,
+    "max_active_seconds": 372.169,
+    "annotations_per_active_minute": 2.781
+  },
+  "ai_assisted": {
+    "trials": 6,
+    "total_annotations": 30,
+    "mean_active_seconds": 92.314,
+    "median_active_seconds": 87.322,
+    "mean_wall_seconds": 93.173,
+    "median_wall_seconds": 87.392,
+    "min_active_seconds": 58.239,
+    "max_active_seconds": 145.12,
+    "annotations_per_active_minute": 3.25
+  },
+  "mean_active_time_reduction_percent": 14.43,
+  "median_active_time_reduction_percent": -45.45,
+  "outlier_sensitivity": {
+    "excluded_manual_trial": 4,
+    "excluded_duration_seconds": 372.169,
+    "remaining_manual_trials": 5,
+    "mean_time_reduction_percent": -67.79
+  },
+  "methodology": {
+    "design": "Single annotator, 12 trials, 6 per mode",
+    "timing": "Active time excludes model inference; wall time adds recorded inference time",
+    "limitations": [
+      "Different images across conditions",
+      "Small sample size",
+      "Possible image-difficulty imbalance",
+      "Possible learning and order effects",
+      "Annotation quality not evaluated here",
+      "Outlier sensitivity"
+    ]
+  }
+}
