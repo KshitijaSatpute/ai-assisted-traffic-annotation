@@ -366,7 +366,23 @@ setGalleryRefresh((value) => value + 1);
     </div>
   </section>
 )}
+{projectId && (
+  <section className="sidebar-section">
+    <h3>05 / Export Dataset</h3>
 
+    <p className="gallery-empty">
+      Download project annotations with source images.
+    </p>
+
+    <a
+      className="dataset-export-button"
+      href={`${API_URL}/projects/${projectId}/export/coco`}
+      download
+    >
+      Download COCO Dataset ZIP
+    </a>
+  </section>
+)}
           {error && <p role="alert" className="error">{error}</p>}
           {message && <p role="status" className="studio-message">{message}</p>}
         </aside>
