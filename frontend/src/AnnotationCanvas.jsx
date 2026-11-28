@@ -600,7 +600,7 @@ function addCustomClass() {
       </div>}
       {message && <p role="status">{message}</p>}
       <p>Click a yellow box to review it, or draw and edit a solid box.</p>
-      <div style={{ overflowX: "auto", maxWidth: "100%" }}>
+      <div className="annotation-stage">
         <Stage width={width} height={height} onMouseDown={startDrawing}
           onMouseMove={updateDrawing} onMouseUp={finishDrawing}>
           <Layer><KonvaImage image={image} width={width} height={height} listening={false}/></Layer>

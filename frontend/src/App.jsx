@@ -158,116 +158,173 @@ function App() {
 
   return (
     <main className="app">
-      <header>
-        <h1>✦ Labelix AI</h1>
-        <p>
-          Create projects, define object labels, and annotate images.
-        </p>
+      <header className="studio-header">
+        <div>
+          <h1>Labelix AI</h1>
+          <p>Intelligent Image Annotation Studio</p>
+        </div>
+
+        <span className="studio-header-tag">
+          Human-in-the-Loop AI
+        </span>
       </header>
 
-      <section className="upload-card">
-        <h2>1. Select Project</h2>
+      <div className="studio-layout">
+        <aside className="studio-sidebar">
+          <div className="sidebar-heading">
+            <h2>Project Setup</h2>
+            <p>Manage your annotation workspace</p>
+          </div>
 
-        <select
-          aria-label="Select project"
-          value={projectId}
-          onChange={(event) => {
-            setProjectId(event.target.value);
-            setUploadedImage(null);
-            setSelectedFile(null);
-            setError("");
-            setMessage("");
-          }}
-        >
-          <option value="">Legacy Mode (Existing Traffic Study)</option>
+          <section className="sidebar-section">
+            <h3>01 / Select Project</h3>
 
-          {projects.map((project) => (
-            <option key={project.project_id} value={project.project_id}>
-              {project.name}
-            </option>
-          ))}
-        </select>
+            <select
+              aria-label="Select project"
+              value={projectId}
+              onChange={(event) => {
+                setProjectId(event.target.value);
+                setUploadedImage(null);
+                setSelectedFile(null);
+                setError("");
+                setMessage("");
+              }}
+            >
+              <option value="">
+                Legacy Mode (Traffic Study)
+              </option>
 
-        <h3>Create New Project</h3>
+              {projects.map((project) => (
+                <option
+                  key={project.project_id}
+                  value={project.project_id}
+                >
+                  {project.name}
+                </option>
+              ))}
+            </select>
 
-        <input
-          type="text"
-          placeholder="e.g. Product Annotation"
-          value={projectName}
-          onChange={(event) => setProjectName(event.target.value)}
-          maxLength={100}
-        />
-
-        <button onClick={createProject} disabled={loading}>
-          Create Project
-        </button>
-
-        {selectedProject && (
-          <div>
-            <h2>2. Project Labels</h2>
-
-            <p>
-              <strong>Current labels:</strong>{" "}
-              {selectedProject.labels.join(", ") || "No labels yet"}
-            </p>
+            <label className="field-label" htmlFor="project-name">
+              Create New Project
+            </label>
 
             <input
+              id="project-name"
               type="text"
-              placeholder="e.g. dog"
-              value={newLabel}
-              onChange={(event) => setNewLabel(event.target.value)}
-              maxLength={50}
+              placeholder="Project name"
+              value={projectName}
+              onChange={(event) => setProjectName(event.target.value)}
+              maxLength={100}
             />
 
-            <button onClick={addLabel} disabled={loading}>
-              Add Label
+            <button onClick={createProject} disabled={loading}>
+              Create Project
             </button>
+          </section>
+
+          {selectedProject && (
+            <section className="sidebar-section">
+              <h3>02 / Project Labels</h3>
+
+              <div className="label-list">
+                {selectedProject.labels.length > 0
+                  ? selectedProject.labels.map((name) => (
+                      <span className="label-chip" key={name}>
+                        {name}
+                      </span>
+                    ))
+                  : <p>No labels added yet.</p>}
+              </div>
+
+              <label className="field-label" htmlFor="new-project-label">
+                Add Object Class
+              </label>
+
+              <input
+                id="new-project-label"
+                type="text"
+                placeholder="e.g. bottle"
+                value={newLabel}
+                onChange={(event) => setNewLabel(event.target.value)}
+                maxLength={50}
+              />
+
+              <button onClick={addLabel} disabled={loading}>
+                Add Label
+              </button>
+            </section>
+          )}
+
+          <section className="sidebar-section">
+            <h3>03 / Upload Image</h3>
+
+            <input
+              key={projectId}
+              type="file"
+              accept="image/png,image/jpeg"
+              onChange={(event) => {
+                setSelectedFile(event.target.files?.[0] ?? null);
+                setError("");
+              }}
+            />
+
+            <button onClick={handleUpload} disabled={loading}>
+              {loading ? "Uploading..." : "Upload Image"}
+            </button>
+          </section>
+
+          {error && <p role="alert" className="error">{error}</p>}
+          {message && <p role="status" className="studio-message">{message}</p>}
+        </aside>
+
+        <section className="studio-main">
+          <div className="workspace-heading">
+            <div>
+              <h2>Annotation Workspace</h2>
+              <p>
+                Draw bounding boxes, review AI suggestions,
+                and export annotations.
+              </p>
+            </div>
+
+            <span className="workspace-status">
+              {uploadedImage ? "Image Loaded" : "Ready"}
+            </span>
           </div>
-        )}
 
-        <h2>3. Upload Image</h2>
+          {uploadedImage ? (
+            <div className="result">
+              <div className="image-details">
+                <strong>Current Image</strong>
+                <span>
+                  {uploadedImage.width} x {uploadedImage.height} px
+                </span>
+              </div>
 
-        <input
-          key={projectId}
-          type="file"
-          accept="image/png,image/jpeg"
-          onChange={(event) => {
-            setSelectedFile(event.target.files?.[0] ?? null);
-            setError("");
-          }}
-        />
-
-        <button onClick={handleUpload} disabled={loading}>
-          {loading ? "Uploading..." : "Upload Image"}
-        </button>
-
-        {error && <p role="alert" className="error">{error}</p>}
-        {message && <p role="status">{message}</p>}
-
-        {uploadedImage && (
-          <div className="result">
-            <h3>Image Uploaded</h3>
-
-            <p>Image ID: {uploadedImage.image_id}</p>
-
-            <p>
-              Dimensions: {uploadedImage.width} x {uploadedImage.height}
-            </p>
-
-            <AnnotationCanvas
-  key={uploadedImage.image_id}
-  imageUrl={uploadedImage.url}
-  imageId={uploadedImage.image_id}
-  projectId={uploadedImage.projectId || null}
-  projectLabels={
-    uploadedImage.projectId
-      ? selectedProject?.labels ?? []
-      : null
-  }
-/>
-          </div>
-        )}
-      </section>
+              <AnnotationCanvas
+                key={uploadedImage.image_id}
+                imageUrl={uploadedImage.url}
+                imageId={uploadedImage.image_id}
+                projectId={uploadedImage.projectId || null}
+                projectLabels={
+                  uploadedImage.projectId
+                    ? selectedProject?.labels ?? []
+                    : null
+                }
+              />
+            </div>
+          ) : (
+            <div className="workspace-empty">
+              <div className="empty-icon">+</div>
+              <h3>Your annotation workspace is ready</h3>
+              <p>
+                Select a project and upload an image to begin annotating.
+              </p>
+              <span>Manual Annotation · AI Suggestions · COCO Export</span>
+            </div>
+          )}
+        </section>
+      </div>
     </main>
   );
 }
