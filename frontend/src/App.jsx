@@ -159,7 +159,7 @@ function App() {
   return (
     <main className="app">
       <header>
-        <h1>AI-Assisted Image Annotation Platform</h1>
+        <h1>✦ Labelix AI</h1>
         <p>
           Create projects, define object labels, and annotate images.
         </p>
