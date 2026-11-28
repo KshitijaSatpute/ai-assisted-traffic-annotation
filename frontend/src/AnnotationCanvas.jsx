@@ -534,6 +534,49 @@ function addCustomClass() {
         <p style={{ fontSize: 12 }}>Timer measures unpaused session time, excluding the AI request wait. Pauses are explicit. It is not automatic keyboard/mouse activity detection.</p>
       </div>
       <div style={{ marginBottom: 12 }}>
+
+<div
+  style={{
+    display: "flex",
+    alignItems: "center",
+    gap: 10,
+    flexWrap: "wrap",
+    marginBottom: 14,
+  }}
+>
+  <label htmlFor="selected-annotation">
+    Select annotation:
+  </label>
+
+  <select
+    id="selected-annotation"
+    value={selectedId ?? ""}
+    onChange={(event) => {
+      const selectedBox = boxes.find(
+        (box) => String(box.id) === event.target.value
+      );
+
+      if (selectedBox) {
+        selectBox(selectedBox);
+      } else {
+        setSelectedId(null);
+      }
+    }}
+  >
+    <option value="">Choose a box</option>
+
+    {boxes.map((box, index) => (
+      <option key={box.id} value={String(box.id)}>
+        {index + 1}. {box.label}
+      </option>
+    ))}
+  </select>
+
+  <span style={{ fontSize: 12, color: "#647d70" }}>
+    {boxes.length} annotations
+  </span>
+</div>
+
         <label htmlFor="annotation-label">Object class: </label>
         <select id="annotation-label" value={label} onChange={(e) => changeLabel(e.target.value)}>
         {availableLabels.map((className) => (
