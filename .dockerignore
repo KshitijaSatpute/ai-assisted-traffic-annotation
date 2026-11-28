@@ -1,0 +1,14 @@
+.git
+**/.venv
+**/__pycache__
+**/*.pyc
+**/node_modules
+**/dist
+backend/data
+backend/uploads
+study_data
+evaluation
+weights
+*.zip
+*.db
+.env

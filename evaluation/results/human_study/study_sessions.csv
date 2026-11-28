@@ -1,0 +1,13 @@
+trial,session_id,image_id,mode,status,active_duration_ms,inference_ms,saved_annotations,manual_add,ai_accept,ai_edit,ai_reject,delete
+1,7e45692d-ac38-4959-bb00-ba521463f964,55d15f74-9120-40e3-954a-298228371863,manual,completed,60126,0.0,3,3,0,0,0,0
+2,a672abf2-42d8-4d4c-9a93-6b665192dc7c,debb0cb3-694e-4ba1-9ac7-faa89dd0dd2e,ai_assisted,completed,145120,4492.45,3,3,1,1,0,1
+3,cf6b4ee3-abbc-4ed1-bbb3-6e6e896f8525,7c3b451a-1a8f-4e3d-9649-35ca5b58cdbc,ai_assisted,completed,112641,95.07,8,1,7,1,2,0
+4,b4e63b56-ef98-4d96-bd3c-d56a713e5c6c,cd6aec56-b1e0-42b3-8fd7-f2c4c5086fc7,manual,completed,372169,0.0,5,5,0,0,0,0
+5,3dbc5e66-fa94-4347-8fbe-8adec8742a60,f45b15c0-40ed-4dd0-bbf0-951faa3a65ec,manual,completed,63826,0.0,5,6,0,0,0,1
+6,6109a406-66c8-4e09-b025-3d6ba06ee7ee,ec7986a7-d455-47ac-8ce9-287bdaa8b5e7,ai_assisted,completed,58239,185.22,3,3,1,0,0,1
+7,2a125b38-4f45-47f7-9f90-b2e92d4acdfa,b258b41c-58b6-4795-8f06-c9e4bbaba0d6,ai_assisted,completed,94716,98.1,4,1,5,7,0,2
+8,e4835750-8d81-4a81-8968-b8b5ee1a4fd9,d10eeda1-5226-49a5-b543-878f13de47dd,manual,completed,32993,0.0,5,5,0,0,0,0
+9,c2f70dd9-51a7-47e9-95ab-bcb09d7c0739,3742a3c4-984e-45c2-b02f-dfdf24490daa,manual,completed,59943,0.0,7,7,0,0,0,0
+10,e6c63af2-e0a1-4876-80e7-9692583b17fb,3653f80c-96a9-412e-814f-1f96c4fc3059,ai_assisted,completed,63241,240.11,8,1,7,0,2,0
+11,47c71d9e-6360-4859-8b92-a91ea5296ed0,a348a176-8169-461e-aff5-9921932edf5c,ai_assisted,completed,79928,42.3,4,2,1,1,1,0
+12,69516274-9ceb-42fd-b831-e1be73eacf05,7bdb8a73-dc87-42b4-8185-b0172b1e7d82,manual,completed,58204,0.0,5,5,0,0,0,0

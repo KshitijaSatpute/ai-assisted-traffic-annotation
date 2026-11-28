@@ -1,0 +1,902 @@
+[
+  {
+    "trial": 1,
+    "session_id": "7e45692d-ac38-4959-bb00-ba521463f964",
+    "annotation_id": "8753a7bb-73e2-488f-a48d-425d10d0d6a5",
+    "image_id": "55d15f74-9120-40e3-954a-298228371863",
+    "label": "car",
+    "bbox": {
+      "x_min": 575.6700000000001,
+      "y_min": 172.66858748403575,
+      "x_max": 629.3166666666667,
+      "y_max": 211.20185134099617
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 1,
+    "session_id": "7e45692d-ac38-4959-bb00-ba521463f964",
+    "annotation_id": "3dbe9423-b2d0-4cc0-be59-eda6daf47fa0",
+    "image_id": "55d15f74-9120-40e3-954a-298228371863",
+    "label": "truck",
+    "bbox": {
+      "x_min": 662.33,
+      "y_min": 138.26388761174968,
+      "x_max": 731.1077777777778,
+      "y_max": 208.4494753512133
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 1,
+    "session_id": "7e45692d-ac38-4959-bb00-ba521463f964",
+    "annotation_id": "130568d3-c7f1-4e49-8165-ff242ecfdc98",
+    "image_id": "55d15f74-9120-40e3-954a-298228371863",
+    "label": "pedestrian",
+    "bbox": {
+      "x_min": 1015.8477777777778,
+      "y_min": 160.28289553001278,
+      "x_max": 1068.118888888889,
+      "y_max": 317.1683269476373
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 2,
+    "session_id": "a672abf2-42d8-4d4c-9a93-6b665192dc7c",
+    "annotation_id": "69726f4e-7cb1-4099-ab4b-9ebe7fbcdde9",
+    "image_id": "debb0cb3-694e-4ba1-9ac7-faa89dd0dd2e",
+    "label": "truck",
+    "bbox": {
+      "x_min": 444.6274719238281,
+      "y_min": 179.39271545410156,
+      "x_max": 572.3515014648438,
+      "y_max": 279.0705871582031
+    },
+    "source": "ai_edited",
+    "confidence": 0.871408
+  },
+  {
+    "trial": 2,
+    "session_id": "a672abf2-42d8-4d4c-9a93-6b665192dc7c",
+    "annotation_id": "9a94bbce-4808-43e6-be62-d8190c87122e",
+    "image_id": "debb0cb3-694e-4ba1-9ac7-faa89dd0dd2e",
+    "label": "pedestrian",
+    "bbox": {
+      "x_min": 1189.121772520496,
+      "y_min": 163.50901896002011,
+      "x_max": 1229.0128809263183,
+      "y_max": 270.8483812207145
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 2,
+    "session_id": "a672abf2-42d8-4d4c-9a93-6b665192dc7c",
+    "annotation_id": "0176e6f9-a890-4c1d-9fbe-d61888fcb586",
+    "image_id": "debb0cb3-694e-4ba1-9ac7-faa89dd0dd2e",
+    "label": "truck",
+    "bbox": {
+      "x_min": 620.936451570579,
+      "y_min": 126.35308586977972,
+      "x_max": 706.3827202963391,
+      "y_max": 217.17870009036727
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 3,
+    "session_id": "cf6b4ee3-abbc-4ed1-bbb3-6e6e896f8525",
+    "annotation_id": "1bb87872-7be3-4316-ae15-47e70a30cd75",
+    "image_id": "7c3b451a-1a8f-4e3d-9649-35ca5b58cdbc",
+    "label": "pedestrian",
+    "bbox": {
+      "x_min": 0.2876950800418854,
+      "y_min": 154.63775634765625,
+      "x_max": 45.40854263305664,
+      "y_max": 328.144287109375
+    },
+    "source": "ai_accepted",
+    "confidence": 0.705309
+  },
+  {
+    "trial": 3,
+    "session_id": "cf6b4ee3-abbc-4ed1-bbb3-6e6e896f8525",
+    "annotation_id": "2d0458ff-ab52-4223-8450-3d0563aaef39",
+    "image_id": "7c3b451a-1a8f-4e3d-9649-35ca5b58cdbc",
+    "label": "pedestrian",
+    "bbox": {
+      "x_min": 324.0733947753906,
+      "y_min": 170.45179748535156,
+      "x_max": 347.56268310546875,
+      "y_max": 229.04507446289062
+    },
+    "source": "ai_accepted",
+    "confidence": 0.38721
+  },
+  {
+    "trial": 3,
+    "session_id": "cf6b4ee3-abbc-4ed1-bbb3-6e6e896f8525",
+    "annotation_id": "c24187c2-f388-4e28-86c3-7a77da08b7ce",
+    "image_id": "7c3b451a-1a8f-4e3d-9649-35ca5b58cdbc",
+    "label": "pedestrian",
+    "bbox": {
+      "x_min": 744.6974487304688,
+      "y_min": 168.88291931152344,
+      "x_max": 764.1350708007811,
+      "y_max": 231.3880920410156
+    },
+    "source": "ai_accepted",
+    "confidence": 0.38233
+  },
+  {
+    "trial": 3,
+    "session_id": "cf6b4ee3-abbc-4ed1-bbb3-6e6e896f8525",
+    "annotation_id": "14eaa267-bb7b-4d87-b9cd-07b9aaa6cc14",
+    "image_id": "7c3b451a-1a8f-4e3d-9649-35ca5b58cdbc",
+    "label": "pedestrian",
+    "bbox": {
+      "x_min": 825.6202392578125,
+      "y_min": 159.40293884277344,
+      "x_max": 868.9096679687499,
+      "y_max": 256.42843627929693
+    },
+    "source": "ai_accepted",
+    "confidence": 0.3653
+  },
+  {
+    "trial": 3,
+    "session_id": "cf6b4ee3-abbc-4ed1-bbb3-6e6e896f8525",
+    "annotation_id": "d8ce204f-4310-42f7-ace2-fbda21babc6e",
+    "image_id": "7c3b451a-1a8f-4e3d-9649-35ca5b58cdbc",
+    "label": "pedestrian",
+    "bbox": {
+      "x_min": 916.3864135742188,
+      "y_min": 167.4960479736328,
+      "x_max": 944.4967651367188,
+      "y_max": 244.30618286132812
+    },
+    "source": "ai_accepted",
+    "confidence": 0.594463
+  },
+  {
+    "trial": 3,
+    "session_id": "cf6b4ee3-abbc-4ed1-bbb3-6e6e896f8525",
+    "annotation_id": "6c46c099-b63c-41f5-8c33-efe4e0fa4717",
+    "image_id": "7c3b451a-1a8f-4e3d-9649-35ca5b58cdbc",
+    "label": "pedestrian",
+    "bbox": {
+      "x_min": 896.3022460937501,
+      "y_min": 163.88653564453125,
+      "x_max": 919.9261474609376,
+      "y_max": 237.8651428222656
+    },
+    "source": "ai_accepted",
+    "confidence": 0.383716
+  },
+  {
+    "trial": 3,
+    "session_id": "cf6b4ee3-abbc-4ed1-bbb3-6e6e896f8525",
+    "annotation_id": "02bcb627-ceb3-465c-86b3-6e57e98725c6",
+    "image_id": "7c3b451a-1a8f-4e3d-9649-35ca5b58cdbc",
+    "label": "truck",
+    "bbox": {
+      "x_min": 1082.1318359375,
+      "y_min": 157.7100830078125,
+      "x_max": 1107.5438232421875,
+      "y_max": 229.2254486083984
+    },
+    "source": "ai_edited",
+    "confidence": 0.400052
+  },
+  {
+    "trial": 3,
+    "session_id": "cf6b4ee3-abbc-4ed1-bbb3-6e6e896f8525",
+    "annotation_id": "4c2e5794-17de-492b-8c84-a0bef1159636",
+    "image_id": "7c3b451a-1a8f-4e3d-9649-35ca5b58cdbc",
+    "label": "truck",
+    "bbox": {
+      "x_min": 558.1638891490418,
+      "y_min": 149.16315754504805,
+      "x_max": 618.8838850312035,
+      "y_max": 190.6037849912367
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 4,
+    "session_id": "b4e63b56-ef98-4d96-bd3c-d56a713e5c6c",
+    "annotation_id": "16397962-9bda-4730-82e3-3e453b2c4f3c",
+    "image_id": "cd6aec56-b1e0-42b3-8fd7-f2c4c5086fc7",
+    "label": "truck",
+    "bbox": {
+      "x_min": 586.7945549320098,
+      "y_min": 162.76200315103367,
+      "x_max": 609.9145533640846,
+      "y_max": 179.07900260417392
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 4,
+    "session_id": "b4e63b56-ef98-4d96-bd3c-d56a713e5c6c",
+    "annotation_id": "f1446ab0-d646-4414-b671-9c687a1de12f",
+    "image_id": "cd6aec56-b1e0-42b3-8fd7-f2c4c5086fc7",
+    "label": "pedestrian",
+    "bbox": {
+      "x_min": 626.2345522573139,
+      "y_min": 161.45665292984225,
+      "x_max": 669.7545493059251,
+      "y_max": 264.6888499999235
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 4,
+    "session_id": "b4e63b56-ef98-4d96-bd3c-d56a713e5c6c",
+    "annotation_id": "761b5c48-2bcd-4698-aaec-60c15a59095d",
+    "image_id": "cd6aec56-b1e0-42b3-8fd7-f2c4c5086fc7",
+    "label": "pedestrian",
+    "bbox": {
+      "x_min": 712.2907166584479,
+      "y_min": 161.40225319660533,
+      "x_max": 790.4183708856951,
+      "y_max": 240.26775055345004
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 4,
+    "session_id": "b4e63b56-ef98-4d96-bd3c-d56a713e5c6c",
+    "annotation_id": "7dd01087-43ff-4c66-a456-2f0e2e62b9f1",
+    "image_id": "cd6aec56-b1e0-42b3-8fd7-f2c4c5086fc7",
+    "label": "pedestrian",
+    "bbox": {
+      "x_min": 1019.4860850090879,
+      "y_min": 130.35705598958418,
+      "x_max": 1106.102960293303,
+      "y_max": 278.1116975326128
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 4,
+    "session_id": "b4e63b56-ef98-4d96-bd3c-d56a713e5c6c",
+    "annotation_id": "874614a9-f9fe-436e-9cff-d89dec3235b9",
+    "image_id": "cd6aec56-b1e0-42b3-8fd7-f2c4c5086fc7",
+    "label": "pedestrian",
+    "bbox": {
+      "x_min": 920.4040895987441,
+      "y_min": 139.6462539257516,
+      "x_max": 1001.1849695382813,
+      "y_max": 228.0300009635948
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 5,
+    "session_id": "3dbc5e66-fa94-4347-8fbe-8adec8742a60",
+    "annotation_id": "29cd34ce-d6ba-4a33-9542-e7a0a563b312",
+    "image_id": "f45b15c0-40ed-4dd0-bbf0-951faa3a65ec",
+    "label": "car",
+    "bbox": {
+      "x_min": 359.44390262560336,
+      "y_min": 185.07836799841152,
+      "x_max": 409.12389925646295,
+      "y_max": 216.84951570715614
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 5,
+    "session_id": "3dbc5e66-fa94-4347-8fbe-8adec8742a60",
+    "annotation_id": "b106e055-8e8f-444c-ac83-41f9ab5940b7",
+    "image_id": "f45b15c0-40ed-4dd0-bbf0-951faa3a65ec",
+    "label": "car",
+    "bbox": {
+      "x_min": 450.5238964488459,
+      "y_min": 180.93430525379264,
+      "x_max": 475.36389476427576,
+      "y_max": 194.74784773585554
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 5,
+    "session_id": "3dbc5e66-fa94-4347-8fbe-8adec8742a60",
+    "annotation_id": "f7b3598a-d858-475b-a426-b2f8530658d9",
+    "image_id": "f45b15c0-40ed-4dd0-bbf0-951faa3a65ec",
+    "label": "car",
+    "bbox": {
+      "x_min": 496.0638933604672,
+      "y_min": 180.93430525379264,
+      "x_max": 512.6238922374205,
+      "y_max": 189.22243074303037
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 5,
+    "session_id": "3dbc5e66-fa94-4347-8fbe-8adec8742a60",
+    "annotation_id": "19b16b12-543f-42b0-b9bb-30919ffd490e",
+    "image_id": "f45b15c0-40ed-4dd0-bbf0-951faa3a65ec",
+    "label": "car",
+    "bbox": {
+      "x_min": 520.9038916758971,
+      "y_min": 175.4088882609675,
+      "x_max": 537.4638905528503,
+      "y_max": 186.4597222466178
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 5,
+    "session_id": "3dbc5e66-fa94-4347-8fbe-8adec8742a60",
+    "annotation_id": "bd57b3bf-9d8d-4ce4-a885-34e2748661a3",
+    "image_id": "f45b15c0-40ed-4dd0-bbf0-951faa3a65ec",
+    "label": "truck",
+    "bbox": {
+      "x_min": 3.4187654807653454,
+      "y_min": 140.8228844007757,
+      "x_max": 130.34907945142834,
+      "y_max": 241.7660398299042
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 6,
+    "session_id": "6109a406-66c8-4e09-b025-3d6ba06ee7ee",
+    "annotation_id": "ddc9ea96-3153-450b-8a94-70f8e1f6989f",
+    "image_id": "ec7986a7-d455-47ac-8ce9-287bdaa8b5e7",
+    "label": "car",
+    "bbox": {
+      "x_min": 40.12214660644531,
+      "y_min": 179.12348937988278,
+      "x_max": 161.77847290039062,
+      "y_max": 231.6545257568359
+    },
+    "source": "ai_accepted",
+    "confidence": 0.331719
+  },
+  {
+    "trial": 6,
+    "session_id": "6109a406-66c8-4e09-b025-3d6ba06ee7ee",
+    "annotation_id": "dbd4000b-5df1-434f-a2b2-ebd39c18e986",
+    "image_id": "ec7986a7-d455-47ac-8ce9-287bdaa8b5e7",
+    "label": "car",
+    "bbox": {
+      "x_min": 547.1238898977397,
+      "y_min": 174.02753401276124,
+      "x_max": 570.5838883067566,
+      "y_max": 196.12920198406184
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 6,
+    "session_id": "6109a406-66c8-4e09-b025-3d6ba06ee7ee",
+    "annotation_id": "96f2b9ac-396d-4a19-b21f-405bdde42121",
+    "image_id": "ec7986a7-d455-47ac-8ce9-287bdaa8b5e7",
+    "label": "truck",
+    "bbox": {
+      "x_min": 587.0238871844175,
+      "y_min": 165.73940852352354,
+      "x_max": 613.4838854048447,
+      "y_max": 193.3664934876493
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 7,
+    "session_id": "2a125b38-4f45-47f7-9f90-b2e92d4acdfa",
+    "annotation_id": "6b66b9e6-6367-45ca-88b2-ecae420d3b7e",
+    "image_id": "b258b41c-58b6-4795-8f06-c9e4bbaba0d6",
+    "label": "car",
+    "bbox": {
+      "x_min": 583.5978393554688,
+      "y_min": 173.55136108398438,
+      "x_max": 610.622314453125,
+      "y_max": 195.76271057128903
+    },
+    "source": "ai_accepted",
+    "confidence": 0.339304
+  },
+  {
+    "trial": 7,
+    "session_id": "2a125b38-4f45-47f7-9f90-b2e92d4acdfa",
+    "annotation_id": "fe168963-32d7-486d-a5db-f913134c2bc5",
+    "image_id": "b258b41c-58b6-4795-8f06-c9e4bbaba0d6",
+    "label": "car",
+    "bbox": {
+      "x_min": 420.0945129394531,
+      "y_min": 176.3145751953125,
+      "x_max": 526.4960327148438,
+      "y_max": 257.9154052734375
+    },
+    "source": "ai_accepted",
+    "confidence": 0.841027
+  },
+  {
+    "trial": 7,
+    "session_id": "2a125b38-4f45-47f7-9f90-b2e92d4acdfa",
+    "annotation_id": "97e07827-3761-4bfd-b5ea-daddadaca9d9",
+    "image_id": "b258b41c-58b6-4795-8f06-c9e4bbaba0d6",
+    "label": "car",
+    "bbox": {
+      "x_min": 233.52978515624997,
+      "y_min": 185.28909301757812,
+      "x_max": 310.097412109375,
+      "y_max": 229.0439453125
+    },
+    "source": "ai_accepted",
+    "confidence": 0.324558
+  },
+  {
+    "trial": 7,
+    "session_id": "2a125b38-4f45-47f7-9f90-b2e92d4acdfa",
+    "annotation_id": "291d465c-820c-4fdf-a1f9-82f8729380a0",
+    "image_id": "b258b41c-58b6-4795-8f06-c9e4bbaba0d6",
+    "label": "pedestrian",
+    "bbox": {
+      "x_min": 140.02391750597346,
+      "y_min": 176.7902425091738,
+      "x_max": 160.72391610216496,
+      "y_max": 218.2308699553624
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 8,
+    "session_id": "e4835750-8d81-4a81-8968-b8b5ee1a4fd9",
+    "annotation_id": "38d67f15-90b0-467a-b843-b40405de9463",
+    "image_id": "d10eeda1-5226-49a5-b543-878f13de47dd",
+    "label": "car",
+    "bbox": {
+      "x_min": 595.4238866221864,
+      "y_min": 179.55295100558638,
+      "x_max": 629.9238842825056,
+      "y_max": 207.18003596971212
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 8,
+    "session_id": "e4835750-8d81-4a81-8968-b8b5ee1a4fd9",
+    "annotation_id": "5e8f5570-7c16-47e6-9e1d-571d7e8a25ad",
+    "image_id": "d10eeda1-5226-49a5-b543-878f13de47dd",
+    "label": "car",
+    "bbox": {
+      "x_min": 449.1438965424332,
+      "y_min": 186.4597222466178,
+      "x_max": 472.60389495145023,
+      "y_max": 203.03597322509327
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 8,
+    "session_id": "e4835750-8d81-4a81-8968-b8b5ee1a4fd9",
+    "annotation_id": "6d843a9b-6c74-4052-a4e1-2633aa26b113",
+    "image_id": "d10eeda1-5226-49a5-b543-878f13de47dd",
+    "label": "car",
+    "bbox": {
+      "x_min": 496.0638933604672,
+      "y_min": 185.07836799841152,
+      "x_max": 512.6238922374205,
+      "y_max": 200.2732647286807
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 8,
+    "session_id": "e4835750-8d81-4a81-8968-b8b5ee1a4fd9",
+    "annotation_id": "2ed94e94-9a8f-4cc7-a0c1-74bc4224123e",
+    "image_id": "d10eeda1-5226-49a5-b543-878f13de47dd",
+    "label": "car",
+    "bbox": {
+      "x_min": 516.7638919566588,
+      "y_min": 183.69701375020523,
+      "x_max": 534.7038907400248,
+      "y_max": 198.89191048047442
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 8,
+    "session_id": "e4835750-8d81-4a81-8968-b8b5ee1a4fd9",
+    "annotation_id": "3463d6b8-9be2-4a08-a095-93a41b6b5345",
+    "image_id": "d10eeda1-5226-49a5-b543-878f13de47dd",
+    "label": "pedestrian",
+    "bbox": {
+      "x_min": 42.04392415066703,
+      "y_min": 198.89191048047442,
+      "x_max": 65.50392255968407,
+      "y_max": 230.66305818921904
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 9,
+    "session_id": "c2f70dd9-51a7-47e9-95ab-bcb09d7c0739",
+    "annotation_id": "f2d8ea79-e361-40af-ae68-603a2e5b28e6",
+    "image_id": "3742a3c4-984e-45c2-b02f-dfdf24490daa",
+    "label": "car",
+    "bbox": {
+      "x_min": 3.351426088024489,
+      "y_min": 192.6134055486006,
+      "x_max": 62.69142206377346,
+      "y_max": 224.38469241482508
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 9,
+    "session_id": "c2f70dd9-51a7-47e9-95ab-bcb09d7c0739",
+    "annotation_id": "54b89e53-ad59-4cc2-a504-fb9dc601f86f",
+    "image_id": "3742a3c4-984e-45c2-b02f-dfdf24490daa",
+    "label": "car",
+    "bbox": {
+      "x_min": 65.451421876599,
+      "y_min": 188.46932465300608,
+      "x_max": 131.6914173844118,
+      "y_max": 214.71517032510457
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 9,
+    "session_id": "c2f70dd9-51a7-47e9-95ab-bcb09d7c0739",
+    "annotation_id": "46fd6c34-63c5-45ad-a219-3aadec794af9",
+    "image_id": "3742a3c4-984e-45c2-b02f-dfdf24490daa",
+    "label": "car",
+    "bbox": {
+      "x_min": 135.8314171036501,
+      "y_min": 185.70660405594307,
+      "x_max": 188.27141354733521,
+      "y_max": 213.3338100265731
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 9,
+    "session_id": "c2f70dd9-51a7-47e9-95ab-bcb09d7c0739",
+    "annotation_id": "222ac60d-50e0-4f32-8773-612b59d93b04",
+    "image_id": "3742a3c4-984e-45c2-b02f-dfdf24490daa",
+    "label": "car",
+    "bbox": {
+      "x_min": 192.41141326657353,
+      "y_min": 181.5625231603486,
+      "x_max": 229.67141073971823,
+      "y_max": 206.42700853391557
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 9,
+    "session_id": "c2f70dd9-51a7-47e9-95ab-bcb09d7c0739",
+    "annotation_id": "b4e25a74-fbcb-4dcb-b500-ba25fbb3d2cb",
+    "image_id": "3742a3c4-984e-45c2-b02f-dfdf24490daa",
+    "label": "car",
+    "bbox": {
+      "x_min": 232.43141055254375,
+      "y_min": 177.4184422647541,
+      "x_max": 272.45140783851394,
+      "y_max": 205.0456482353841
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 9,
+    "session_id": "c2f70dd9-51a7-47e9-95ab-bcb09d7c0739",
+    "annotation_id": "8e1319a9-86e0-4add-ab5d-9f41de2115f4",
+    "image_id": "3742a3c4-984e-45c2-b02f-dfdf24490daa",
+    "label": "car",
+    "bbox": {
+      "x_min": 275.2114076513395,
+      "y_min": 184.3252437574116,
+      "x_max": 304.1914056860076,
+      "y_max": 202.2829276383211
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 9,
+    "session_id": "c2f70dd9-51a7-47e9-95ab-bcb09d7c0739",
+    "annotation_id": "74f5b3ab-68c1-441e-8b46-49104b1ac8e8",
+    "image_id": "3742a3c4-984e-45c2-b02f-dfdf24490daa",
+    "label": "truck",
+    "bbox": {
+      "x_min": 562.32284163967,
+      "y_min": 132.00904150591455,
+      "x_max": 621.9931752060337,
+      "y_max": 202.5498267256525
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 10,
+    "session_id": "e6c63af2-e0a1-4876-80e7-9692583b17fb",
+    "annotation_id": "fbe0f945-3594-412e-afe2-173be3cb8ecd",
+    "image_id": "3653f80c-96a9-412e-814f-1f96c4fc3059",
+    "label": "pedestrian",
+    "bbox": {
+      "x_min": 0.16777555644512177,
+      "y_min": 186.52178955078122,
+      "x_max": 46.396896362304695,
+      "y_max": 374.23028564453125
+    },
+    "source": "ai_accepted",
+    "confidence": 0.656962
+  },
+  {
+    "trial": 10,
+    "session_id": "e6c63af2-e0a1-4876-80e7-9692583b17fb",
+    "annotation_id": "a495118c-c90d-447c-ad80-d1d4519732bc",
+    "image_id": "3653f80c-96a9-412e-814f-1f96c4fc3059",
+    "label": "car",
+    "bbox": {
+      "x_min": 0.36430397629737854,
+      "y_min": 225.69403076171875,
+      "x_max": 123.29035186767578,
+      "y_max": 363.3446350097656
+    },
+    "source": "ai_accepted",
+    "confidence": 0.56471
+  },
+  {
+    "trial": 10,
+    "session_id": "e6c63af2-e0a1-4876-80e7-9692583b17fb",
+    "annotation_id": "7c5f2a40-52eb-4f66-bcf9-8adfc363726a",
+    "image_id": "3653f80c-96a9-412e-814f-1f96c4fc3059",
+    "label": "car",
+    "bbox": {
+      "x_min": 306.52215576171875,
+      "y_min": 188.51475524902344,
+      "x_max": 332.08453369140625,
+      "y_max": 208.01020812988284
+    },
+    "source": "ai_accepted",
+    "confidence": 0.337789
+  },
+  {
+    "trial": 10,
+    "session_id": "e6c63af2-e0a1-4876-80e7-9692583b17fb",
+    "annotation_id": "6acbc377-524c-4954-ab88-e393d28ef692",
+    "image_id": "3653f80c-96a9-412e-814f-1f96c4fc3059",
+    "label": "car",
+    "bbox": {
+      "x_min": 390.7801208496093,
+      "y_min": 196.22264099121094,
+      "x_max": 456.2401123046875,
+      "y_max": 240.74876403808594
+    },
+    "source": "ai_accepted",
+    "confidence": 0.685989
+  },
+  {
+    "trial": 10,
+    "session_id": "e6c63af2-e0a1-4876-80e7-9692583b17fb",
+    "annotation_id": "cd6c1fbf-a3b9-44f4-9d53-5a72fcc187a2",
+    "image_id": "3653f80c-96a9-412e-814f-1f96c4fc3059",
+    "label": "car",
+    "bbox": {
+      "x_min": 499.87475585937494,
+      "y_min": 194.7411956787109,
+      "x_max": 576.7774658203125,
+      "y_max": 240.1254425048828
+    },
+    "source": "ai_accepted",
+    "confidence": 0.584351
+  },
+  {
+    "trial": 10,
+    "session_id": "e6c63af2-e0a1-4876-80e7-9692583b17fb",
+    "annotation_id": "786f0106-92c2-473b-bdcd-e663f8ba624d",
+    "image_id": "3653f80c-96a9-412e-814f-1f96c4fc3059",
+    "label": "car",
+    "bbox": {
+      "x_min": 787.877685546875,
+      "y_min": 179.73939514160156,
+      "x_max": 938.3988037109375,
+      "y_max": 257.3318786621094
+    },
+    "source": "ai_accepted",
+    "confidence": 0.757404
+  },
+  {
+    "trial": 10,
+    "session_id": "e6c63af2-e0a1-4876-80e7-9692583b17fb",
+    "annotation_id": "2b4b180c-95ba-4b6c-b8f3-b6b595baa160",
+    "image_id": "3653f80c-96a9-412e-814f-1f96c4fc3059",
+    "label": "car",
+    "bbox": {
+      "x_min": 897.2218627929686,
+      "y_min": 174.79638671875,
+      "x_max": 1228.913330078125,
+      "y_max": 292.7328186035156
+    },
+    "source": "ai_accepted",
+    "confidence": 0.888461
+  },
+  {
+    "trial": 10,
+    "session_id": "e6c63af2-e0a1-4876-80e7-9692583b17fb",
+    "annotation_id": "4f9cec9b-0f9a-49ee-b8dc-3b3df291413a",
+    "image_id": "3653f80c-96a9-412e-814f-1f96c4fc3059",
+    "label": "car",
+    "bbox": {
+      "x_min": 359.12931243896486,
+      "y_min": 180.8818729452161,
+      "x_max": 376.03431243896495,
+      "y_max": 200.77250756081168
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 11,
+    "session_id": "47c71d9e-6360-4859-8b92-a91ea5296ed0",
+    "annotation_id": "9c74a873-ebf7-4414-bb23-9ee21c1c0f52",
+    "image_id": "a348a176-8169-461e-aff5-9921932edf5c",
+    "label": "car",
+    "bbox": {
+      "x_min": 630.9922485351562,
+      "y_min": 174.17788696289062,
+      "x_max": 790.6449584960938,
+      "y_max": 289.1103210449219
+    },
+    "source": "ai_accepted",
+    "confidence": 0.863518
+  },
+  {
+    "trial": 11,
+    "session_id": "47c71d9e-6360-4859-8b92-a91ea5296ed0",
+    "annotation_id": "cdebc1de-abd5-41a6-abdf-55f81dc7d644",
+    "image_id": "a348a176-8169-461e-aff5-9921932edf5c",
+    "label": "pedestrian",
+    "bbox": {
+      "x_min": 613.5663452148438,
+      "y_min": 175.85516357421875,
+      "x_max": 661.7145385742188,
+      "y_max": 263.3969421386719
+    },
+    "source": "ai_edited",
+    "confidence": 0.347392
+  },
+  {
+    "trial": 11,
+    "session_id": "47c71d9e-6360-4859-8b92-a91ea5296ed0",
+    "annotation_id": "bdbd0677-a20e-4eb6-b681-5199d409781e",
+    "image_id": "a348a176-8169-461e-aff5-9921932edf5c",
+    "label": "truck",
+    "bbox": {
+      "x_min": 2.171767545675329,
+      "y_min": 3.1285229121316993,
+      "x_max": 304.18823245432463,
+      "y_max": 372.59839790898207
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 11,
+    "session_id": "47c71d9e-6360-4859-8b92-a91ea5296ed0",
+    "annotation_id": "981d89e0-0753-41fb-b9b7-7562edb82b43",
+    "image_id": "a348a176-8169-461e-aff5-9921932edf5c",
+    "label": "truck",
+    "bbox": {
+      "x_min": 308.56529411764706,
+      "y_min": 179.01419354838703,
+      "x_max": 382.8147058823529,
+      "y_max": 238.41219941348965
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 12,
+    "session_id": "69516274-9ceb-42fd-b831-e1be73eacf05",
+    "annotation_id": "1994ef78-b127-4a4c-9f25-325cf49a3afb",
+    "image_id": "7bdb8a73-dc87-42b4-8185-b0172b1e7d82",
+    "label": "pedestrian",
+    "bbox": {
+      "x_min": 654.9354545454544,
+      "y_min": 173.60161089016148,
+      "x_max": 685.0445454545453,
+      "y_max": 296.31604306878256
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 12,
+    "session_id": "69516274-9ceb-42fd-b831-e1be73eacf05",
+    "annotation_id": "d3d7f228-7520-45f5-914f-56a920e31e68",
+    "image_id": "7bdb8a73-dc87-42b4-8185-b0172b1e7d82",
+    "label": "car",
+    "bbox": {
+      "x_min": 652.05,
+      "y_min": 165.2007038123167,
+      "x_max": 683.79,
+      "y_max": 188.68363636363637
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 12,
+    "session_id": "69516274-9ceb-42fd-b831-e1be73eacf05",
+    "annotation_id": "380226f0-ab1f-43b0-97d4-9f65655de73a",
+    "image_id": "7bdb8a73-dc87-42b4-8185-b0172b1e7d82",
+    "label": "car",
+    "bbox": {
+      "x_min": 629.97,
+      "y_min": 185.92093841642227,
+      "x_max": 825.93,
+      "y_max": 296.42885630498535
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 12,
+    "session_id": "69516274-9ceb-42fd-b831-e1be73eacf05",
+    "annotation_id": "22629e5e-8ec9-42cd-9301-571f4dfd74a6",
+    "image_id": "7bdb8a73-dc87-42b4-8185-b0172b1e7d82",
+    "label": "truck",
+    "bbox": {
+      "x_min": 308.42999999999995,
+      "y_min": 188.4025150846549,
+      "x_max": 396.74999999999994,
+      "y_max": 245.6000655605064
+    },
+    "source": "manual",
+    "confidence": null
+  },
+  {
+    "trial": 12,
+    "session_id": "69516274-9ceb-42fd-b831-e1be73eacf05",
+    "annotation_id": "e7011199-aa34-4df8-a6f0-3e43b6afec87",
+    "image_id": "7bdb8a73-dc87-42b4-8185-b0172b1e7d82",
+    "label": "truck",
+    "bbox": {
+      "x_min": 3.557739048817003,
+      "y_min": 2.327793240183209,
+      "x_max": 264.1622609511828,
+      "y_max": 372.27678153987546
+    },
+    "source": "manual",
+    "confidence": null
+  }
+]

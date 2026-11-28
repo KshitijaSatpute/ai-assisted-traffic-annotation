@@ -1,8 +1,8 @@
 
 :root {
-  font-family: Arial, sans-serif;
-  color: #0f172a;
-  background: #f8fafc;
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: #34443c;
+  background: #f7f8f5;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
 }
@@ -14,9 +14,15 @@
 body {
   margin: 0;
   min-width: 320px;
+  min-height: 100vh;
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
+}
+
+a {
+  color: #526e60;
 }

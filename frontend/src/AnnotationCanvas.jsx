@@ -3,8 +3,8 @@ import {
   Stage, Layer, Image as KonvaImage, Rect, Transformer,
   Text as KonvaText,
 } from "react-konva";
+const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
-const API_URL = "http://127.0.0.1:8000";
 const COLORS = { car: "#22c55e", truck: "#f97316", pedestrian: "#3b82f6" };
 const DEFAULT_LABELS = ["car", "truck", "pedestrian"];
 const CUSTOM_LABELS_STORAGE_KEY = "annotation_custom_labels_v1";
@@ -42,7 +42,7 @@ function annotationToBox(item, scale) {
   };
 }
 
-export default function AnnotationCanvas({ imageUrl, imageId }) {
+export default function AnnotationCanvas({ imageUrl, imageId, projectLabels = null, projectId = null }) {
   const [image, setImage] = useState(null);
   const [boxes, setBoxes] = useState([]);
   const [aiSuggestions, setAiSuggestions] = useState([]);
@@ -51,6 +51,12 @@ export default function AnnotationCanvas({ imageUrl, imageId }) {
   const [label, setLabel] = useState("car");
 
   const [customLabels, setCustomLabels] = useState(loadCustomLabels);
+  const availableLabels = projectLabels ?? [...DEFAULT_LABELS, ...customLabels];
+  useEffect(() => {
+  if (projectLabels !== null) {
+    setLabel(projectLabels[0] ?? "");
+  }
+}, [projectLabels]);
   const [newClassName, setNewClassName] = useState("");
 
   const [drawing, setDrawing] = useState(null);
@@ -295,7 +301,11 @@ setSelectedId(null);
     const shouldResume = Boolean(session && clockRef.current.since !== null);
     if (shouldResume) pauseClock();
     try {
-      const response = await fetch(`${API_URL}/images/${imageId}/predict?conf=0.01`, { method: "POST" });
+      const endpoint = projectId
+  ? `${API_URL}/projects/${projectId}/images/${imageId}/predict?conf=0.01`
+  : `${API_URL}/images/${imageId}/predict?conf=0.01`;
+
+const response = await fetch(endpoint, { method: "POST" });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const data = await response.json();
       setAiSuggestions(data.predictions.map((p) => ({
@@ -524,14 +534,56 @@ function addCustomClass() {
         <p style={{ fontSize: 12 }}>Timer measures unpaused session time, excluding the AI request wait. Pauses are explicit. It is not automatic keyboard/mouse activity detection.</p>
       </div>
       <div style={{ marginBottom: 12 }}>
+
+<div
+  style={{
+    display: "flex",
+    alignItems: "center",
+    gap: 10,
+    flexWrap: "wrap",
+    marginBottom: 14,
+  }}
+>
+  <label htmlFor="selected-annotation">
+    Select annotation:
+  </label>
+
+  <select
+    id="selected-annotation"
+    value={selectedId ?? ""}
+    onChange={(event) => {
+      const selectedBox = boxes.find(
+        (box) => String(box.id) === event.target.value
+      );
+
+      if (selectedBox) {
+        selectBox(selectedBox);
+      } else {
+        setSelectedId(null);
+      }
+    }}
+  >
+    <option value="">Choose a box</option>
+
+    {boxes.map((box, index) => (
+      <option key={box.id} value={String(box.id)}>
+        {index + 1}. {box.label}
+      </option>
+    ))}
+  </select>
+
+  <span style={{ fontSize: 12, color: "#647d70" }}>
+    {boxes.length} annotations
+  </span>
+</div>
+
         <label htmlFor="annotation-label">Object class: </label>
         <select id="annotation-label" value={label} onChange={(e) => changeLabel(e.target.value)}>
-          <option value="car">Car</option>
-          <option value="truck">Truck</option>
-          <option value="pedestrian">Pedestrian</option>
-          {customLabels.map((className) => (
-            <option key={className} value={className}>{className}</option>
-          ))}
+        {availableLabels.map((className) => (
+  <option key={className} value={className}>
+    {className}
+  </option>
+))}
         </select>
         <button type="button" onClick={deleteSelected} disabled={selectedId === null}
           style={{ marginLeft: 12 }}>Delete Selected Box</button>
@@ -540,7 +592,11 @@ function addCustomClass() {
             onChange={(e) => setNewClassName(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") addCustomClass(); }}
             placeholder="New class, e.g. helmet" maxLength={50}/>
-          <button type="button" onClick={addCustomClass}>Add Custom Class</button>
+          {projectLabels === null && (
+  <button type="button" onClick={addCustomClass}>
+    Add Custom Class
+  </button>
+)}
         </div>
       </div>
       <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 12 }}>
@@ -587,7 +643,7 @@ function addCustomClass() {
       </div>}
       {message && <p role="status">{message}</p>}
       <p>Click a yellow box to review it, or draw and edit a solid box.</p>
-      <div style={{ overflowX: "auto", maxWidth: "100%" }}>
+      <div className="annotation-stage">
         <Stage width={width} height={height} onMouseDown={startDrawing}
           onMouseMove={updateDrawing} onMouseUp={finishDrawing}>
           <Layer><KonvaImage image={image} width={width} height={height} listening={false}/></Layer>

@@ -10,13 +10,18 @@ from pydantic import BaseModel, Field
 from PIL import Image, UnidentifiedImageError
 
 app = FastAPI(
-    title="AI-Assisted Traffic Annotation API",
+    title="AI-Assisted Image Annotation API",
     version="0.1.0",
 )
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=[
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:5174",
+    "http://127.0.0.1:5174",
+],
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["Content-Type"],
 )
@@ -196,6 +201,50 @@ def save_annotations(
                 status_code=422,
                 detail="Bounding box exceeds image dimensions",
             )
+
+
+    # Validate labels for project-associated images.
+    # Legacy study images remain unaffected.
+    with get_db() as connection:
+        project_row = connection.execute(
+            """
+            SELECT project_id
+            FROM project_images
+            WHERE image_id = ?
+            """,
+            (canonical_id,),
+        ).fetchone()
+
+        if project_row is not None:
+            project_id = project_row[0]
+
+            allowed_labels = {
+                row[0]
+                for row in connection.execute(
+                    """
+                    SELECT label
+                    FROM project_labels
+                    WHERE project_id = ?
+                    """,
+                    (project_id,),
+                ).fetchall()
+            }
+
+            invalid_labels = sorted({
+                annotation.label
+                for annotation in annotations
+                if annotation.label not in allowed_labels
+            })
+
+            if invalid_labels:
+                raise HTTPException(
+                    status_code=422,
+                    detail=(
+                        "Labels not allowed in this project: "
+                        + ", ".join(invalid_labels)
+                    ),
+                )
+
 
     payload = json.dumps(
         [annotation.model_dump() for annotation in annotations]
@@ -762,3 +811,15 @@ def export_coco():
                 'attachment; filename="annotations_coco.json"'
         },
     )
+
+# Register project-management endpoints.
+from backend.projects import router as projects_router
+
+app.include_router(projects_router)
+
+
+from backend.open_vocab import router as open_vocab_router
+
+app.include_router(open_vocab_router)
+from backend.project_export import router as project_export_router
+app.include_router(project_export_router)
